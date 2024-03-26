@@ -1,6 +1,5 @@
-import React from 'react'
-import type { RouteObject, Router } from 'react-router-dom'
-import { Outlet, NavLink } from 'react-router-dom'
+import type { RouteObject } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import styles from './index.module.less'
 
 interface HeaderProps {
@@ -8,8 +7,6 @@ interface HeaderProps {
 }
 
 const Header = ({ routerConfig }: HeaderProps) => {
-
-
     return (
         <nav>
             {

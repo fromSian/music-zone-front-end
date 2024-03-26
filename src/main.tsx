@@ -1,10 +1,9 @@
+import Loading from '@/components/loading/Loading'
+import { ConfigProvider } from 'antd'
 import React, { lazy, Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
-import Loading from '@/components/loading/Loading'
-import Header from './components/Header/Header'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import type { RouteObject } from 'react-router-dom'
-import { ConfigProvider } from 'antd'
+import Header from './components/Header/Header'
 
 const lazyLoad = (name: string) => {
   const Module = lazy(async () => import(`./pages/${name}.tsx`))
