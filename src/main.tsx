@@ -48,7 +48,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ConfigProvider theme={{
       token: {
-        colorPrimary: 'rgb(12, 12, 12)',
+        "colorBgBase": "#36393b",
+        "colorTextBase": "#f6ffed",
+        "colorPrimary": "#4096ff",
+        "colorInfo": "#4096ff",
+        "colorSuccess": "#389e0d",
+        "colorWarning": "#ad6800",
+        "colorError": "#ff4d4f",
+        "wireframe": true
       }
     }}>
       <RouterProvider router={router}>
