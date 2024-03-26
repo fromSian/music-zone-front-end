@@ -4,6 +4,7 @@ import Loading from '@/components/loading/Loading'
 import Header from './components/Header/Header'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import type { RouteObject } from 'react-router-dom'
+import { ConfigProvider } from 'antd'
 
 const lazyLoad = (name: string) => {
   const Module = lazy(async () => import(`./pages/${name}.tsx`))
@@ -46,8 +47,13 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-
-    <RouterProvider router={router}>
-    </RouterProvider>
+    <ConfigProvider theme={{
+      token: {
+        colorPrimary: 'rgb(12, 12, 12)',
+      }
+    }}>
+      <RouterProvider router={router}>
+      </RouterProvider>
+    </ConfigProvider>
   </React.StrictMode>,
 )
