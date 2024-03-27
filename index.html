@@ -4,12 +4,28 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
   <title>Music Zone</title>
 </head>
 
 <body>
   <div id="root"></div>
+  <script>
+    const resizeRem = () => {
+      const clientWidth = document.documentElement.clientWidth || document.body.clientWidth
+      let rootFontSize = 1
+      if (clientWidth > 1920) {
+        rootFontSize = 1920 / 750
+      } else if (clientWidth < 620) {
+        rootFontSize = 620 / 750
+      } else {
+        rootFontSize = clientWidth / 750
+      }
+      document.documentElement.style.fontSize = `${rootFontSize}px`
+    }
+    window.addEventListener('load', resizeRem)
+    window.addEventListener('resize', resizeRem)
+  </script>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
