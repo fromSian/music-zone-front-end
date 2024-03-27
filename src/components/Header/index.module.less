@@ -2,6 +2,56 @@
     display: inline-block;
 
     &:not(:first-child) {
-        margin-left: 8px;
+        margin-left: 8rem;
+    }
+}
+
+
+.search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin: 16rem;
+
+    .search_input {
+        background: unset;
+        border: none;
+        outline: none;
+        color: @font-color;
+        width: 0;
+        transition: 0.5s;
+    }
+
+    .clear_icon {
+        opacity: 0;
+        transition: 0.3s;
+        margin-right: 8rem;
+        transform: translateX(8rem);
+        width: 0;
+    }
+
+    .clear_icon_show {
+        opacity: 1;
+        transform: translateX(0);
+        width: max-content;
+    }
+
+}
+
+.search_expand {
+    .search_input {
+        width: 120rem;
+    }
+}
+
+.avatar_icon {
+    cursor: pointer;
+}
+
+
+:global {
+    .ant-layout-header {
+        padding: 0 16rem;
     }
 }
