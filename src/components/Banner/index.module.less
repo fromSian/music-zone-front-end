@@ -1,0 +1,41 @@
+.banner {
+    width: 100%;
+    height: 400px;
+    position: relative;
+
+
+    .banner_direction_icon {
+        cursor: pointer;
+        position: absolute;
+        top: calc(50% - 12rem);
+        z-index: 9;
+    }
+
+    .banner_left_icon {
+        left: 40rem;
+    }
+
+    .banner_right_icon {
+        right: 40rem;
+    }
+
+
+
+    .banner_content {
+        display: flex;
+        width: max-content;
+        height: 100%;
+
+        .banner_item {
+            width: 100vw;
+            height: 100%;
+            text-align: center;
+        }
+    }
+
+    .transition {
+        transition: all 1s ease-in-out;
+    }
+
+
+}
