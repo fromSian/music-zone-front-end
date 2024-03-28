@@ -3,7 +3,7 @@ import { ConfigProvider } from 'antd'
 import React, { lazy, Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Header from './components/Header/Header'
+import Header from './components/Layout/Layout'
 
 const lazyLoad = (name: string) => {
   const Module = lazy(async () => import(`./pages/${name}.tsx`))

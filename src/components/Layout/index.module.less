@@ -13,6 +13,10 @@
     align-items: center;
     cursor: pointer;
     margin: 16rem;
+    height: 32rem;
+    padding: 0 8rem;
+    border-radius: 8rem;
+    transition: 0.5s;
 
     .search_input {
         background: unset;
@@ -26,22 +30,25 @@
     .clear_icon {
         opacity: 0;
         transition: 0.3s;
-        margin-right: 8rem;
         transform: translateX(8rem);
-        width: 0;
     }
 
     .clear_icon_show {
         opacity: 1;
         transform: translateX(0);
-        width: max-content;
     }
 
 }
 
 .search_expand {
+    background: @bg-main;
+
     .search_input {
         width: 120rem;
+    }
+
+    .clear_icon {
+        margin-right: 8rem;
     }
 }
 
@@ -54,5 +61,14 @@
     .ant-layout-header {
         padding: 0 16rem;
         background: @bg-color;
+        height: @header-height;
+
+        .ant-menu {
+            height: @header-height;
+            .ant-menu-item  {
+                height: @header-height;
+                line-height: @header-height;
+            }
+        }
     }
 }
