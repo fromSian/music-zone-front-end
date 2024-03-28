@@ -54,7 +54,7 @@ const Banner = () => {
         timeoutRef.current && clearTimeout(timeoutRef.current)
         animateRef.current = undefined
         timeoutRef.current = undefined
-        animateRef.current = setInterval(next, interval)
+        // animateRef.current = setInterval(next, interval)
 
         return () => {
             animateRef.current && clearInterval(animateRef.current)
@@ -73,7 +73,6 @@ const Banner = () => {
         timeoutRef.current = setTimeout(() => {
             animateRef.current = setInterval(next, interval)
         }, interval)
-
     }, [next])
 
 
