@@ -38,15 +38,6 @@ const Playbar = () => {
   const [current, setCurrent] = useState<number>(0);
 
   useEffect(() => {
-    // 总时长
-    const duration = audioRef.current?.duration;
-    // 当前播放位置
-    const currentTime = audioRef.current?.currentTime;
-    // 音量
-    const volume = audioRef.current?.volume;
-  }, []);
-
-  useEffect(() => {
     setIsReady(false);
     if (!audioRef.current) {
       return;
@@ -201,10 +192,12 @@ const Playbar = () => {
             className={styles.playbar_operator_volume_line}
             ref={volumeDivRef}
             onClick={(event: MouseEvent<HTMLElement>) => {
-              volumeDivRef.current &&
-                setVolume(
-                  event.nativeEvent.offsetX / volumeDivRef.current.clientWidth
-                );
+              if (volumeDivRef.current && audioRef.current) {
+                const _volume =
+                  event.nativeEvent.offsetX / volumeDivRef.current.clientWidth;
+                setVolume(_volume);
+                audioRef.current.volume = _volume;
+              }
             }}
           >
             <div
