@@ -24,6 +24,11 @@ const Playbar = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const volumeDivRef = useRef<HTMLDivElement | null>(null);
   const timeDivRef = useRef<HTMLDivElement | null>(null);
+  const namePRef = useRef<HTMLParagraphElement | null>(null);
+  const nameDivRef = useRef<HTMLDivElement | null>(null);
+  const nameIntervalRef = useRef<ReturnType<typeof setInterval>>();
+
+  const [nameLeft, setNameLeft] = useState<number>(0);
 
   const [playingSortType, setPlayingSortType] =
     useState<playingSortType>("inorder");
@@ -44,6 +49,34 @@ const Playbar = () => {
     playingSong: song,
   } = useAppSelector((state) => state.playing);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!namePRef.current || !nameDivRef.current) {
+      return;
+    }
+    nameIntervalRef.current && clearInterval(nameIntervalRef.current);
+
+    const pWidth = namePRef.current?.getBoundingClientRect().width;
+    const dWidth = nameDivRef.current?.getBoundingClientRect().width;
+    if (pWidth <= dWidth) {
+      setNameLeft(0);
+      return;
+    }
+    setNameLeft(10);
+
+    nameIntervalRef.current = setInterval(() => {
+      setNameLeft((left) => {
+        if (!pWidth || !dWidth) {
+          return 0;
+        }
+        return -left >= pWidth ? dWidth : left - 1;
+      });
+    }, 50);
+
+    return () => {
+      nameIntervalRef.current && clearInterval(nameIntervalRef.current);
+    };
+  }, [song]);
 
   useEffect(() => {
     if (!song) {
@@ -131,8 +164,16 @@ const Playbar = () => {
       {song && (
         <div className={styles.playbar_info}>
           <Tooltip title={song.name}>
-            {/* 跑马灯 */}
-            <p className={styles.playbar_info_name}>{song.name}</p>
+            <div className={styles.playbar_info_name_wrap} ref={nameDivRef}>
+              {/* 跑马灯 */}
+              <p
+                ref={namePRef}
+                className={styles.playbar_info_name}
+                style={{ left: nameLeft }}
+              >
+                {song.name}
+              </p>
+            </div>
           </Tooltip>
           <Tooltip title={song.album}>
             <p className={styles.playbar_info_album}>{song.album}</p>

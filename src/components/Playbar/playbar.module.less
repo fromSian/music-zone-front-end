@@ -1,161 +1,165 @@
 .playbar {
-    width: 100vw;
-    background: @bg-dark;
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    justify-content: space-between;
-    height: @footer-height;
-    padding: 16rem 20rem;
-    align-items: center;
-    gap: 16rem;
+  width: 100vw;
+  background: @bg-dark;
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  justify-content: space-between;
+  height: @footer-height;
+  padding: 16rem 20rem;
+  align-items: center;
+  gap: 16rem;
 
+  .playbar_album_image {
+    width: 48rem;
+    height: 48rem;
+    cursor: pointer;
+    border-radius: 8rem;
+    background: @bg-gray;
+    position: relative;
 
+    .playbar_album_image_main {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
 
-    .playbar_album_image {
-        width: 48rem;
-        height: 48rem;
+    .playbar_album_image_loading {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  .playbar_info {
+    width: 60rem;
+
+    .playbar_info_name_wrap {
+      overflow: hidden;
+      position: relative;
+      height: 32rem;
+      line-height: 32rem;
+      .playbar_info_name {
+        font-weight: 500;
+        font-size: 16rem;
+        text-wrap: nowrap;
+        white-space: nowrap;
+        position: absolute;
+      }
+    }
+
+    .playbar_info_album,
+    .playbar_info_artist {
+      color: @font-color-light;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      word-break: keep-all;
+      text-wrap: nowrap;
+      white-space: nowrap;
+    }
+
+    .playbar_info_album {
+      margin-bottom: 2rem;
+    }
+  }
+
+  .play_control {
+    flex: 1 1 0%;
+
+    .play_control_switch {
+      display: flex;
+      gap: 12rem;
+      justify-content: center;
+      font-size: 20rem;
+      margin-bottom: 8rem;
+
+      .play_control_switch_icon {
         cursor: pointer;
-        border-radius: 8rem;
-        background: @bg-gray;
+        transition: 0.5s;
+        &:active {
+          color: fade(@font-color-light, 20);
+        }
+      }
+    }
+
+    .play_control_bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8rem;
+
+      .play_control_bar_line {
+        height: 4rem;
+        background: @playbar-main-bg;
+        flex: 1 1 0%;
+        border-radius: 2rem;
+        cursor: pointer;
+        transition: 0.3s;
         position: relative;
 
-        .playbar_album_image_main {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+        &:hover {
+          height: 8rem;
         }
 
-        .playbar_album_image_loading {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+        .play_control_bar_line_highlight {
+          position: absolute;
+          height: 100%;
+          transition: 0.3s;
+          background: @playbar-highlight-bg;
+          border-radius: inherit;
         }
-
+      }
     }
+  }
 
-    .playbar_info {
-        max-width: 60rem;
+  .playbar_operator {
+    display: flex;
+    justify-content: space-between;
+    gap: 8rem;
 
-        .playbar_info_name {
-            font-weight: 500;
-            font-size: 16rem;
-            margin-bottom: 4rem;
-            text-wrap: nowrap;
+    .playbar_operator_volume {
+      width: 80rem;
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+
+      .playbar_operator_volume_icon {
+        cursor: pointer;
+        &:active {
+          color: fade(@font-color-light, 40);
         }
+      }
 
-        .playbar_info_album,
-        .playbar_info_artist {
-            color: @font-color-light;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            word-break: keep-all;
-            text-wrap: nowrap;
-        }
-
-        .playbar_info_album {
-            margin-bottom: 2rem;
-        }
-    }
-
-    .play_control {
+      .playbar_operator_volume_line {
+        height: 4rem;
+        background: @playbar-main-bg;
         flex: 1 1 0%;
+        border-radius: 2rem;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
 
-        .play_control_switch {
-            display: flex;
-            gap: 12rem;
-            justify-content: center;
-            font-size: 20rem;
-            margin-bottom: 8rem;
-
-            .play_control_switch_icon {
-                cursor: pointer;
-                transition: 0.5s;
-                &:active {
-                    color: fade(@font-color-light, 20);
-                }
-            }
+        &:hover {
+          height: 8rem;
         }
 
-        .play_control_bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8rem;
-
-            .play_control_bar_line {
-                height: 4rem;
-                background: @playbar-main-bg;
-                flex: 1 1 0%;
-                border-radius: 2rem;
-                cursor: pointer;
-                transition: .3s;
-                position: relative;
-
-                &:hover {
-                    height: 8rem;
-                }
-
-                .play_control_bar_line_highlight {
-                    position: absolute;
-                    height: 100%;
-                    transition: .3s;
-                    background: @playbar-highlight-bg;
-                    border-radius: inherit;
-                }
-            }
+        .playbar_operator_volume_highlight {
+          position: absolute;
+          height: 100%;
+          transition: 0.3s;
+          background: @playbar-highlight-bg;
+          border-radius: inherit;
         }
-
+      }
     }
-
-    .playbar_operator {
-        display: flex;
-        justify-content: space-between;
-        gap: 8rem;
-
-        .playbar_operator_volume {
-            width: 80rem;
-            display: flex;
-            align-items: center;
-            gap: 4rem;
-
-            .playbar_operator_volume_icon {
-                cursor: pointer;
-                &:active {
-                    color: fade(@font-color-light, 40);
-                }
-            }
-
-            .playbar_operator_volume_line {
-                height: 4rem;
-                background: @playbar-main-bg;
-                flex: 1 1 0%;
-                border-radius: 2rem;
-                cursor: pointer;
-                transition: .3s;
-                position: relative;
-
-                &:hover {
-                    height: 8rem;
-                }
-
-                .playbar_operator_volume_highlight {
-                    position: absolute;
-                    height: 100%;
-                    transition: .3s;
-                    background: @playbar-highlight-bg;
-                    border-radius: inherit;
-                }
-            }
-        }
-    }
+  }
 }
 
 .playbar_inactive {
-    .play_control_switch_play {
-        color: fade(@font-color-light, 60);
-        pointer-events: none;
-    }
+  .play_control_switch_play {
+    color: fade(@font-color-light, 60);
+    pointer-events: none;
+  }
 }
