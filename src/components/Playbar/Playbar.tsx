@@ -18,7 +18,12 @@ import { LuRepeat, LuRepeat1 } from "react-icons/lu";
 import PlayingList from "./PlayingList";
 import styles from "./playbar.module.less";
 
-export type playingSortType = "inorder" | "one" | "random";
+/**
+ * 0 = 顺序循环
+ * 1 = 乱序循环
+ * 2 = 单曲循环
+ */
+export type playingSortType = 0 | 1 | 2;
 
 const Playbar = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -30,8 +35,7 @@ const Playbar = () => {
 
   const [nameLeft, setNameLeft] = useState<number>(0);
 
-  const [playingSortType, setPlayingSortType] =
-    useState<playingSortType>("inorder");
+  const [playingSortType, setPlayingSortType] = useState<playingSortType>(0);
 
   const [isReady, setIsReady] = useState(true);
   const [isPlay, setIsPlay] = useState(false);
@@ -115,11 +119,17 @@ const Playbar = () => {
       setIsLoading(false);
     };
     audioRef.current.addEventListener("seeked", seeked);
+
+    const ended = () => {
+      dispatch(playNext());
+    };
+    audioRef.current.addEventListener("ended", ended);
     return () => {
       audioRef.current?.removeEventListener("canplay", ready);
       audioRef.current?.removeEventListener("timeupdate", update);
       audioRef.current?.removeEventListener("seeking", seeking);
       audioRef.current?.removeEventListener("seeked", seeked);
+      audioRef.current?.removeEventListener("ended", ended);
     };
   }, [song]);
 
@@ -133,7 +143,7 @@ const Playbar = () => {
 
   useEffect(() => {
     isPlay ? audioRef.current?.play() : audioRef.current?.pause();
-  }, [isPlay]);
+  }, [isPlay, song]);
 
   const formatTime = (given_seconds: number) => {
     const dateObj = new Date(given_seconds * 1000);
@@ -156,7 +166,7 @@ const Playbar = () => {
         [styles.playbar_inactive]: !isReady || isLoading,
       })}
     >
-      <audio ref={audioRef}></audio>
+      <audio loop={playingSortType === 2} ref={audioRef}></audio>
       <div className={styles.playbar_album_image}>
         <BsFillMusicPlayerFill className={styles.playbar_album_image_main} />
         {isLoading && <Spin className={styles.playbar_album_image_loading} />}
@@ -212,18 +222,24 @@ const Playbar = () => {
             className={styles.play_control_switch_icon}
             onClick={() => dispatch(playNext())}
           />
-          {/* 顺序循环 */}
-          {playingSortType === "inorder" && (
-            <LuRepeat className={styles.play_control_switch_icon} />
-          )}
-          {/* 单曲循环 */}
-          {playingSortType === "one" && (
-            <LuRepeat1 className={styles.play_control_switch_icon} />
-          )}
-          {/* 乱序播放 */}
-          {playingSortType === "random" && (
-            <LiaRandomSolid className={styles.play_control_switch_icon} />
-          )}
+          <div
+            onClick={() =>
+              setPlayingSortType((v) => (v > 1 ? 0 : v + 1) as playingSortType)
+            }
+          >
+            {/* 顺序循环 */}
+            {playingSortType === 0 && (
+              <LuRepeat className={styles.play_control_switch_icon} />
+            )}
+            {/* 单曲循环 */}
+            {playingSortType === 2 && (
+              <LuRepeat1 className={styles.play_control_switch_icon} />
+            )}
+            {/* 乱序播放 */}
+            {playingSortType === 1 && (
+              <LiaRandomSolid className={styles.play_control_switch_icon} />
+            )}
+          </div>
         </div>
 
         <div className={styles.play_control_bar}>
