@@ -121,6 +121,13 @@
             align-items: center;
             gap: 4rem;
 
+            .playbar_operator_volume_icon {
+                cursor: pointer;
+                &:active {
+                    color: fade(@font-color-light, 40);
+                }
+            }
+
             .playbar_operator_volume_line {
                 height: 4rem;
                 background: @playbar-main-bg;

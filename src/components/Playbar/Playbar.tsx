@@ -36,6 +36,8 @@ const Playbar = () => {
   const [duration, setDuration] = useState<number>(0);
   const [current, setCurrent] = useState<number>(0);
 
+  const volumeBakRef = useRef<number>();
+
   const {
     listInAddOrder,
     listInPlayOrder,
@@ -87,6 +89,14 @@ const Playbar = () => {
       audioRef.current?.removeEventListener("seeked", seeked);
     };
   }, [song]);
+
+  const mute = () => {
+    if (audioRef.current) {
+      volumeBakRef.current = audioRef.current.volume;
+      setVolume(0);
+      audioRef.current.volume = 0;
+    }
+  };
 
   useEffect(() => {
     isPlay ? audioRef.current?.play() : audioRef.current?.pause();
@@ -204,9 +214,29 @@ const Playbar = () => {
 
       <div className={styles.playbar_operator}>
         <div className={styles.playbar_operator_volume}>
-          {volume === 0 && <FaVolumeMute />}
-          {volume > 0 && volume < 0.5 && <FaVolumeDown />}
-          {volume > 0.5 && <FaVolumeUp />}
+          {volume === 0 && (
+            <FaVolumeMute
+              className={styles.playbar_operator_volume_icon}
+              onClick={() => {
+                if (volumeBakRef.current && audioRef.current) {
+                  setVolume(volumeBakRef.current);
+                  audioRef.current.volume = volumeBakRef.current;
+                }
+              }}
+            />
+          )}
+          {volume > 0 && volume < 0.5 && (
+            <FaVolumeDown
+              onClick={mute}
+              className={styles.playbar_operator_volume_icon}
+            />
+          )}
+          {volume > 0.5 && (
+            <FaVolumeUp
+              onClick={mute}
+              className={styles.playbar_operator_volume_icon}
+            />
+          )}
           <div
             className={styles.playbar_operator_volume_line}
             ref={volumeDivRef}
