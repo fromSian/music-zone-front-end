@@ -1,3 +1,5 @@
+import { useAppDispatch, useAppSelector } from "@/states/hooks";
+import { playNext, playPrev } from "@/states/playing.slice";
 import {
   HeartOutlined,
   PauseCircleOutlined,
@@ -15,7 +17,6 @@ import { LiaRandomSolid } from "react-icons/lia";
 import { LuRepeat, LuRepeat1 } from "react-icons/lu";
 import PlayingList from "./PlayingList";
 import styles from "./playbar.module.less";
-import { songs } from "./songs";
 
 export type playingSortType = "inorder" | "one" | "random";
 
@@ -27,8 +28,6 @@ const Playbar = () => {
   const [playingSortType, setPlayingSortType] =
     useState<playingSortType>("inorder");
 
-  const [song, setSong] = useState(songs[0]);
-
   const [isReady, setIsReady] = useState(true);
   const [isPlay, setIsPlay] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,12 +36,24 @@ const Playbar = () => {
   const [duration, setDuration] = useState<number>(0);
   const [current, setCurrent] = useState<number>(0);
 
+  const {
+    listInAddOrder,
+    listInPlayOrder,
+    playingSong: song,
+  } = useAppSelector((state) => state.playing);
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
+    if (!song) {
+      return;
+    }
+
     setIsReady(false);
     if (!audioRef.current) {
       return;
     }
-    audioRef.current.src = new URL(song.audio, import.meta.url).href;
+    // audioRef.current.src = new URL(song.audio, import.meta.url).href;
+    audioRef.current.src = song.audio;
     audioRef.current?.load();
 
     const ready = () => {
@@ -107,23 +118,28 @@ const Playbar = () => {
         <BsFillMusicPlayerFill className={styles.playbar_album_image_main} />
         {isLoading && <Spin className={styles.playbar_album_image_loading} />}
       </div>
-      <div className={styles.playbar_info}>
-        <Tooltip title={song.name}>
-          {/* 跑马灯 */}
-          <p className={styles.playbar_info_name}>{song.name}</p>
-        </Tooltip>
-        <Tooltip title={song.album}>
-          <p className={styles.playbar_info_album}>{song.album}</p>
-        </Tooltip>
-        <Tooltip title={song.artist}>
-          <p className={styles.playbar_info_artist}>{song.artist}</p>
-        </Tooltip>
-      </div>
+      {song && (
+        <div className={styles.playbar_info}>
+          <Tooltip title={song.name}>
+            {/* 跑马灯 */}
+            <p className={styles.playbar_info_name}>{song.name}</p>
+          </Tooltip>
+          <Tooltip title={song.album}>
+            <p className={styles.playbar_info_album}>{song.album}</p>
+          </Tooltip>
+          <Tooltip title={song.artist}>
+            <p className={styles.playbar_info_artist}>{song.artist}</p>
+          </Tooltip>
+        </div>
+      )}
 
       <div className={styles.play_control}>
         <div className={styles.play_control_switch}>
           <HeartOutlined className={styles.play_control_switch_icon} />
-          <StepBackwardOutlined className={styles.play_control_switch_icon} />
+          <StepBackwardOutlined
+            className={styles.play_control_switch_icon}
+            onClick={() => dispatch(playPrev())}
+          />
           {!isPlay ? (
             <PlayCircleOutlined
               className={classnames(
@@ -141,7 +157,10 @@ const Playbar = () => {
               onClick={() => setIsPlay((v) => !v)}
             />
           )}
-          <StepForwardOutlined className={styles.play_control_switch_icon} />
+          <StepForwardOutlined
+            className={styles.play_control_switch_icon}
+            onClick={() => dispatch(playNext())}
+          />
           {/* 顺序循环 */}
           {playingSortType === "inorder" && (
             <LuRepeat className={styles.play_control_switch_icon} />
