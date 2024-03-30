@@ -1,4 +1,4 @@
-import { useAppDispatch } from "@/states/hooks";
+import { useAppDispatch, useAppSelector } from "@/states/hooks";
 import { removeOne } from "@/states/playing.slice";
 import { SongType } from "@/types/musicInfo";
 import {
@@ -11,8 +11,10 @@ import {
 import { Popconfirm, Tooltip } from "antd";
 import classnames from "classnames";
 import { useCallback, useState } from "react";
+import PlayingIcon from "../PlayingIcon/PlayingIcon";
 import styles from "./Item.module.less";
 const Item = ({ item }: { item: SongType }) => {
+  const { playingSong, isPlaying } = useAppSelector((state) => state.playing);
   const dispatch = useAppDispatch();
   const handleDelete = useCallback(() => {
     dispatch(removeOne(item.id));
@@ -23,7 +25,14 @@ const Item = ({ item }: { item: SongType }) => {
     <div className={styles.play}>
       {/* 是否播放中 & 立即播放 */}
       <div className={styles.play_status}>
-        {true ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
+        {isPlaying && playingSong.id === item.id ? (
+          <>
+            <PlayingIcon className={styles.play_status_icon_animate} />
+            <PauseCircleOutlined className={styles.play_status_icon_static} />
+          </>
+        ) : (
+          <PlayCircleOutlined />
+        )}
       </div>
       <div className={styles.play_info}>
         <Tooltip title={item.name}>

@@ -5,6 +5,23 @@
   align-items: center;
   justify-content: space-between;
 
+  .play_status {
+    font-size: 24rem;
+
+    .play_status_icon_static {
+      display: none;
+    }
+
+    &:hover {
+      .play_status_icon_animate {
+        display: none;
+      }
+      .play_status_icon_static {
+        display: block;
+      }
+    }
+  }
+
   .play_info {
     flex: 1 1 0%;
     overflow: hidden;

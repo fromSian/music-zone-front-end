@@ -9,6 +9,7 @@ interface InitialStateProps {
   listInPlayOrder: SongType[];
   playingSong: SongType;
   panelVisible: boolean;
+  isPlaying: boolean;
 }
 
 const initialState: InitialStateProps = {
@@ -84,6 +85,8 @@ const initialState: InitialStateProps = {
   },
   // 播放列表面板是否可见
   panelVisible: false,
+  // 是否播放中
+  isPlaying: true,
 };
 
 export const playingListSlice = createSlice({
@@ -134,6 +137,9 @@ export const playingListSlice = createSlice({
     setPanelVisible: (state, action: PayloadAction<boolean>) => {
       state.panelVisible = action.payload;
     },
+    setPlaying: (state, action: PayloadAction<boolean>) => {
+      state.isPlaying = action.payload;
+    },
   },
 });
 
@@ -147,6 +153,7 @@ export const {
   playNext,
   playPrev,
   setPanelVisible,
+  setPlaying,
 } = playingListSlice.actions;
 
 export default playingListSlice.reducer;

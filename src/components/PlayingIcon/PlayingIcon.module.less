@@ -1,0 +1,39 @@
+.circle {
+  width: 24rem;
+  height: 24rem;
+  border: 2rem solid @font-color;
+  border-radius: 50%;
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-end;
+  overflow: hidden;
+
+  .rect {
+    width: 4rem;
+    height: 80%;
+    background: @font-color;
+
+    &:nth-child(1) {
+      transform: translateY(40%);
+      animation: upDown 0.5s ease-in-out 0s infinite alternate-reverse;
+    }
+    &:nth-child(2) {
+      transform: translateY(20%);
+      animation: upDown 0.5s ease-in-out 0.5s infinite alternate-reverse;
+    }
+    &:nth-child(3) {
+      transform: translateY(40%);
+      animation: upDown 0.5s ease-in-out 0.3s infinite alternate-reverse;
+    }
+  }
+
+  @keyframes upDown {
+    from {
+      transform: translateY(5%);
+    }
+    to {
+      transform: translateY(50%);
+    }
+  }
+}
