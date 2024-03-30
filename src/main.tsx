@@ -1,6 +1,6 @@
 import Loading from "@/components/loading/Loading";
 import { ConfigProvider } from "antd";
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -50,23 +50,23 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ConfigProvider
-        theme={{
-          token: {
-            colorBgBase: "#cddec6",
-            colorTextBase: "#181515",
-            colorPrimary: "#4A5589",
-            colorInfo: "#4A5589",
-            colorSuccess: "#3c6e24",
-            colorWarning: "#a47d2e",
-            colorError: "#a33132",
-          },
-        }}
-      >
-        <RouterProvider router={router}></RouterProvider>
-      </ConfigProvider>
-    </Provider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <Provider store={store}>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorBgBase: "#cddec6",
+          colorTextBase: "#181515",
+          colorPrimary: "#4A5589",
+          colorInfo: "#4A5589",
+          colorSuccess: "#3c6e24",
+          colorWarning: "#a47d2e",
+          colorError: "#a33132",
+        },
+      }}
+    >
+      <RouterProvider router={router}></RouterProvider>
+    </ConfigProvider>
+  </Provider>
+  // </React.StrictMode>
 );

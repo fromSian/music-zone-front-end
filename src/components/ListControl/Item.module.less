@@ -1,0 +1,48 @@
+.play {
+  width: calc(100% - 28rem - 16rem);
+  display: flex;
+  gap: 16rem;
+  align-items: center;
+  justify-content: space-between;
+
+  .play_info {
+    flex: 1 1 0%;
+    overflow: hidden;
+
+    .play_info_name {
+      font-weight: 500;
+      font-size: 16rem;
+      margin-bottom: 4rem;
+    }
+
+    .play_info_artist {
+      color: @font-color-light;
+      font-size: 12rem;
+    }
+
+    .play_info_name,
+    .play_info_artist {
+      text-wrap: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: max-content;
+    }
+  }
+
+  .play_operator {
+    display: flex;
+    gap: 16rem;
+    // visibility: hidden;
+    transform: translateX(-150%) scale(0);
+    transition: 0.3s;
+    margin-right: -8rem;
+  }
+
+  &:hover {
+    cursor: pointer;
+    .play_operator {
+      //   visibility: visible;
+      transform: translateX(0%) scale(1);
+    }
+  }
+}

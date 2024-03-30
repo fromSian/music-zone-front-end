@@ -1,0 +1,38 @@
+.sortable_item {
+  list-style-type: none;
+  display: flex;
+  width: 100%;
+  gap: 16rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rem;
+  background: @bg-main;
+  border-radius: 4rem;
+  transition: 0.5s;
+
+  &:not(:last-child) {
+    margin-bottom: 16rem;
+  }
+
+  &:hover {
+    background: @bg-main-highlight;
+  }
+}
+
+.drag_handle {
+  cursor: pointer;
+  width: 28rem;
+  height: 28rem;
+  border-radius: 4rem;
+  transition: 0.5s;
+  text-align: center;
+  line-height: 28rem;
+  color: @font-color-light;
+  border: 1rem solid transparent;
+
+  &:hover {
+    border: 1rem solid @bg-dark-gray;
+    color: rgba(255, 255, 255, 0.8);
+    background: fade(@bg-dark-gray, 50);
+  }
+}

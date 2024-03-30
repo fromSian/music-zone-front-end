@@ -3,6 +3,7 @@ import {
   playNext,
   playPrev,
   revertPlayingList,
+  setPanelVisible,
   shufflePlayingList,
 } from "@/states/playing.slice";
 import {
@@ -56,12 +57,14 @@ const Playbar = () => {
   const [duration, setDuration] = useState<number>(0);
   const [current, setCurrent] = useState<number>(0);
 
+  const [playListVisible, setPlayListVisible] = useState(false);
   const volumeBakRef = useRef<number>();
 
   const {
     listInAddOrder,
     listInPlayOrder,
     playingSong: song,
+    panelVisible,
   } = useAppSelector((state) => state.playing);
   const dispatch = useAppDispatch();
 
@@ -180,161 +183,171 @@ const Playbar = () => {
   };
 
   return (
-    <div
-      className={classnames(styles.playbar, {
-        [styles.playbar_inactive]: !isReady || isLoading,
-      })}
-    >
-      <audio
-        loop={playingSortType === PlayingSortType.One}
-        ref={audioRef}
-      ></audio>
-      <div className={styles.playbar_album_image}>
-        <BsFillMusicPlayerFill className={styles.playbar_album_image_main} />
-        {isLoading && <Spin className={styles.playbar_album_image_loading} />}
-      </div>
-      {song && (
-        <div className={styles.playbar_info}>
-          <Tooltip title={song.name}>
-            <div className={styles.playbar_info_name_wrap} ref={nameDivRef}>
-              {/* 跑马灯 */}
-              <p
-                ref={namePRef}
-                className={styles.playbar_info_name}
-                style={{ left: nameLeft }}
-              >
-                {song.name}
-              </p>
+    <>
+      <div
+        className={classnames(styles.playbar, {
+          [styles.playbar_inactive]: !isReady || isLoading,
+        })}
+      >
+        <audio
+          loop={playingSortType === PlayingSortType.One}
+          ref={audioRef}
+        ></audio>
+        <div className={styles.playbar_album_image}>
+          <BsFillMusicPlayerFill className={styles.playbar_album_image_main} />
+          {isLoading && <Spin className={styles.playbar_album_image_loading} />}
+        </div>
+        {song && (
+          <div className={styles.playbar_info}>
+            <Tooltip title={song.name}>
+              <div className={styles.playbar_info_name_wrap} ref={nameDivRef}>
+                {/* 跑马灯 */}
+                <p
+                  ref={namePRef}
+                  className={styles.playbar_info_name}
+                  style={{ left: nameLeft }}
+                >
+                  {song.name}
+                </p>
+              </div>
+            </Tooltip>
+            <Tooltip title={song.album}>
+              <p className={styles.playbar_info_album}>{song.album}</p>
+            </Tooltip>
+            <Tooltip title={song.artist}>
+              <p className={styles.playbar_info_artist}>{song.artist}</p>
+            </Tooltip>
+          </div>
+        )}
+
+        <div className={styles.play_control}>
+          <div className={styles.play_control_switch}>
+            <HeartOutlined className={styles.play_control_switch_icon} />
+            <StepBackwardOutlined
+              className={styles.play_control_switch_icon}
+              onClick={() => dispatch(playPrev())}
+            />
+            {!isPlay ? (
+              <PlayCircleOutlined
+                className={classnames(
+                  styles.play_control_switch_icon,
+                  styles.play_control_switch_play
+                )}
+                onClick={() => setIsPlay((v) => !v)}
+              />
+            ) : (
+              <PauseCircleOutlined
+                className={classnames(
+                  styles.play_control_switch_icon,
+                  styles.play_control_switch_play
+                )}
+                onClick={() => setIsPlay((v) => !v)}
+              />
+            )}
+            <StepForwardOutlined
+              className={styles.play_control_switch_icon}
+              onClick={() => dispatch(playNext())}
+            />
+            <div onClick={() => setPlayingSortType((v) => (v > 1 ? 0 : v + 1))}>
+              {/* 顺序循环 */}
+              {playingSortType === PlayingSortType.InOrder && (
+                <LuRepeat className={styles.play_control_switch_icon} />
+              )}
+              {/* 单曲循环 */}
+              {playingSortType === PlayingSortType.One && (
+                <LuRepeat1 className={styles.play_control_switch_icon} />
+              )}
+              {/* 乱序播放 */}
+              {playingSortType === PlayingSortType.Random && (
+                <LiaRandomSolid className={styles.play_control_switch_icon} />
+              )}
             </div>
-          </Tooltip>
-          <Tooltip title={song.album}>
-            <p className={styles.playbar_info_album}>{song.album}</p>
-          </Tooltip>
-          <Tooltip title={song.artist}>
-            <p className={styles.playbar_info_artist}>{song.artist}</p>
-          </Tooltip>
-        </div>
-      )}
-
-      <div className={styles.play_control}>
-        <div className={styles.play_control_switch}>
-          <HeartOutlined className={styles.play_control_switch_icon} />
-          <StepBackwardOutlined
-            className={styles.play_control_switch_icon}
-            onClick={() => dispatch(playPrev())}
-          />
-          {!isPlay ? (
-            <PlayCircleOutlined
-              className={classnames(
-                styles.play_control_switch_icon,
-                styles.play_control_switch_play
-              )}
-              onClick={() => setIsPlay((v) => !v)}
-            />
-          ) : (
-            <PauseCircleOutlined
-              className={classnames(
-                styles.play_control_switch_icon,
-                styles.play_control_switch_play
-              )}
-              onClick={() => setIsPlay((v) => !v)}
-            />
-          )}
-          <StepForwardOutlined
-            className={styles.play_control_switch_icon}
-            onClick={() => dispatch(playNext())}
-          />
-          <div onClick={() => setPlayingSortType((v) => (v > 1 ? 0 : v + 1))}>
-            {/* 顺序循环 */}
-            {playingSortType === PlayingSortType.InOrder && (
-              <LuRepeat className={styles.play_control_switch_icon} />
-            )}
-            {/* 单曲循环 */}
-            {playingSortType === PlayingSortType.One && (
-              <LuRepeat1 className={styles.play_control_switch_icon} />
-            )}
-            {/* 乱序播放 */}
-            {playingSortType === PlayingSortType.Random && (
-              <LiaRandomSolid className={styles.play_control_switch_icon} />
-            )}
           </div>
-        </div>
 
-        <div className={styles.play_control_bar}>
-          <p className={styles.play_control_bar_label_now}>
-            {formatTime(current)}
-          </p>
-          <div
-            className={styles.play_control_bar_line}
-            ref={timeDivRef}
-            onClick={(event: MouseEvent<HTMLElement>) => {
-              if (audioRef.current && timeDivRef.current) {
-                audioRef.current.currentTime =
-                  (event.nativeEvent.offsetX / timeDivRef.current.clientWidth) *
-                  duration;
-              }
-            }}
-          >
+          <div className={styles.play_control_bar}>
+            <p className={styles.play_control_bar_label_now}>
+              {formatTime(current)}
+            </p>
             <div
-              className={styles.play_control_bar_line_highlight}
-              style={{ width: `${(current / duration) * 100}%` }}
-            ></div>
-            <div className={styles.play_control_bar_line_highdot}></div>
-          </div>
-          <p className={styles.play_control_bar_label_total}>
-            {formatTime(duration)}
-          </p>
-        </div>
-      </div>
-
-      <div className={styles.playbar_operator}>
-        <div className={styles.playbar_operator_volume}>
-          {volume === 0 && (
-            <FaVolumeMute
-              className={styles.playbar_operator_volume_icon}
-              onClick={() => {
-                if (volumeBakRef.current && audioRef.current) {
-                  setVolume(volumeBakRef.current);
-                  audioRef.current.volume = volumeBakRef.current;
+              className={styles.play_control_bar_line}
+              ref={timeDivRef}
+              onClick={(event: MouseEvent<HTMLElement>) => {
+                if (audioRef.current && timeDivRef.current) {
+                  audioRef.current.currentTime =
+                    (event.nativeEvent.offsetX /
+                      timeDivRef.current.clientWidth) *
+                    duration;
                 }
               }}
-            />
-          )}
-          {volume > 0 && volume < 0.5 && (
-            <FaVolumeDown
-              onClick={mute}
-              className={styles.playbar_operator_volume_icon}
-            />
-          )}
-          {volume > 0.5 && (
-            <FaVolumeUp
-              onClick={mute}
-              className={styles.playbar_operator_volume_icon}
-            />
-          )}
-          <div
-            className={styles.playbar_operator_volume_line}
-            ref={volumeDivRef}
-            onClick={(event: MouseEvent<HTMLElement>) => {
-              if (volumeDivRef.current && audioRef.current) {
-                const _volume =
-                  event.nativeEvent.offsetX / volumeDivRef.current.clientWidth;
-                setVolume(_volume);
-                audioRef.current.volume = _volume;
-              }
-            }}
-          >
-            <div
-              className={styles.playbar_operator_volume_highlight}
-              style={{ width: `${volume * 100}%` }}
-            ></div>
+            >
+              <div
+                className={styles.play_control_bar_line_highlight}
+                style={{ width: `${(current / duration) * 100}%` }}
+              ></div>
+              <div className={styles.play_control_bar_line_highdot}></div>
+            </div>
+            <p className={styles.play_control_bar_label_total}>
+              {formatTime(duration)}
+            </p>
           </div>
         </div>
-        <Tooltip trigger={"click"} title={<PlayingList />}>
-          <UnorderedListOutlined />
-        </Tooltip>
+
+        <div className={styles.playbar_operator}>
+          <div className={styles.playbar_operator_volume}>
+            {volume === 0 && (
+              <FaVolumeMute
+                className={styles.playbar_operator_volume_icon}
+                onClick={() => {
+                  if (volumeBakRef.current && audioRef.current) {
+                    setVolume(volumeBakRef.current);
+                    audioRef.current.volume = volumeBakRef.current;
+                  }
+                }}
+              />
+            )}
+            {volume > 0 && volume < 0.5 && (
+              <FaVolumeDown
+                onClick={mute}
+                className={styles.playbar_operator_volume_icon}
+              />
+            )}
+            {volume > 0.5 && (
+              <FaVolumeUp
+                onClick={mute}
+                className={styles.playbar_operator_volume_icon}
+              />
+            )}
+            <div
+              className={styles.playbar_operator_volume_line}
+              ref={volumeDivRef}
+              onClick={(event: MouseEvent<HTMLElement>) => {
+                if (volumeDivRef.current && audioRef.current) {
+                  const _volume =
+                    event.nativeEvent.offsetX /
+                    volumeDivRef.current.clientWidth;
+                  setVolume(_volume);
+                  audioRef.current.volume = _volume;
+                }
+              }}
+            >
+              <div
+                className={styles.playbar_operator_volume_highlight}
+                style={{ width: `${volume * 100}%` }}
+              ></div>
+            </div>
+          </div>
+          <UnorderedListOutlined
+            className={classnames(styles.playlist_icon, {
+              [styles.playlist_icon_visible]: panelVisible,
+            })}
+            onClick={() => {
+              dispatch(setPanelVisible(!panelVisible));
+            }}
+          />
+        </div>
       </div>
-    </div>
+      <PlayingList />
+    </>
   );
 };
 
