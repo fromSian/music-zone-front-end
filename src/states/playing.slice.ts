@@ -90,14 +90,14 @@ export const playingListSlice = createSlice({
   name: "playingList",
   initialState: initialState,
   reducers: {
-    addTolistInAddOrder: (state, action: PayloadAction<SongType>) => {
-      state.listInAddOrder.push(action.payload);
-    },
-    removeFromListInAddOrder: (state, action: PayloadAction<SongType>) => {
-      const newList = state.listInAddOrder.filter(
-        (item) => item != action.payload
+    addOne: () => {},
+    removeOne: (state, action: PayloadAction<string | number>) => {
+      state.listInAddOrder = state.listInAddOrder.filter(
+        (item) => item.id != action.payload
       );
-      state.listInAddOrder = newList;
+      state.listInPlayOrder = state.listInPlayOrder.filter(
+        (item) => item.id !== action.payload
+      );
     },
     revertPlayingList: (state) => {
       state.listInPlayOrder = state.listInAddOrder;
@@ -138,8 +138,8 @@ export const playingListSlice = createSlice({
 });
 
 export const {
-  addTolistInAddOrder,
-  removeFromListInAddOrder,
+  addOne,
+  removeOne,
   revertPlayingList,
   shufflePlayingList,
   changePlayingListOrder,

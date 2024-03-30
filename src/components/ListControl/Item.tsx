@@ -1,3 +1,5 @@
+import { useAppDispatch } from "@/states/hooks";
+import { removeOne } from "@/states/playing.slice";
 import { SongType } from "@/types/musicInfo";
 import {
   DeleteOutlined,
@@ -6,9 +8,17 @@ import {
   PauseCircleOutlined,
   PlayCircleOutlined,
 } from "@ant-design/icons";
-import { Tooltip } from "antd";
+import { Popconfirm, Tooltip } from "antd";
+import classnames from "classnames";
+import { useCallback, useState } from "react";
 import styles from "./Item.module.less";
 const Item = ({ item }: { item: SongType }) => {
+  const dispatch = useAppDispatch();
+  const handleDelete = useCallback(() => {
+    dispatch(removeOne(item.id));
+  }, [item.id]);
+
+  const [deletePopOpen, setDeletePopOpen] = useState(false);
   return (
     <div className={styles.play}>
       {/* 是否播放中 & 立即播放 */}
@@ -24,16 +34,30 @@ const Item = ({ item }: { item: SongType }) => {
         </Tooltip>
       </div>
 
-      <div className={styles.play_operator}>
+      <div
+        className={classnames(styles.play_operator, {
+          [styles.play_operator_visible]: deletePopOpen,
+        })}
+      >
         <Tooltip title={true ? "取消收藏" : "收藏"}>
           <div className={styles.play_operator_love}>
             {true ? <HeartTwoTone /> : <HeartOutlined />}
           </div>
         </Tooltip>
 
-        <Tooltip title="删除">
-          <DeleteOutlined />
-        </Tooltip>
+        <Popconfirm
+          title="删除"
+          description="确认从播放列表中删除这首？"
+          onConfirm={handleDelete}
+          onCancel={() => {
+            setDeletePopOpen(false);
+          }}
+          okText="确认"
+          cancelText="取消"
+          open={deletePopOpen}
+        >
+          <DeleteOutlined onClick={() => setDeletePopOpen((v) => !v)} />
+        </Popconfirm>
       </div>
     </div>
   );
