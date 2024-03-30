@@ -19,7 +19,7 @@ const initialState: InitialStateProps = {
       album: "你在烦恼什么",
       artist: "苏打绿",
       audio: audio1,
-      id: 0,
+      id: 5,
     },
     {
       name: "起来",
@@ -50,7 +50,7 @@ const initialState: InitialStateProps = {
       album: "你在烦恼什么",
       artist: "苏打绿",
       audio: audio1,
-      id: 0,
+      id: 5,
     },
     {
       name: "起来",
@@ -80,7 +80,7 @@ const initialState: InitialStateProps = {
     album: "你在烦恼什么",
     artist: "苏打绿",
     audio: audio1,
-    id: 0,
+    id: 5,
   },
   // 播放列表面板是否可见
   panelVisible: false,
@@ -104,6 +104,9 @@ export const playingListSlice = createSlice({
     },
     shufflePlayingList: (state) => {
       state.listInPlayOrder = shuffle(state.listInAddOrder);
+    },
+    changePlayingListOrder: (state, action: PayloadAction<SongType[]>) => {
+      state.listInPlayOrder = action.payload;
     },
     changePlayingSong: (state, action: PayloadAction<SongType>) => {
       state.playingSong = action.payload;
@@ -139,6 +142,7 @@ export const {
   removeFromListInAddOrder,
   revertPlayingList,
   shufflePlayingList,
+  changePlayingListOrder,
   changePlayingSong,
   playNext,
   playPrev,
