@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/states/hooks";
 import { changePlayingListOrder } from "@/states/playing.slice";
 import { SongType } from "@/types/musicInfo";
+import { Empty } from "antd";
 import SortableList from "../SortableList/SortableList";
 import Item from "./Item";
 
@@ -14,13 +15,17 @@ const ListControl = () => {
 
   const renderItem = (item: SongType) => <Item item={item} />;
   return (
-    <div>
-      <SortableList
-        items={listInPlayOrder}
-        onChange={onChange}
-        renderItem={renderItem}
-      />
-    </div>
+    <>
+      {listInPlayOrder.length ? (
+        <SortableList
+          items={listInPlayOrder}
+          onChange={onChange}
+          renderItem={renderItem}
+        />
+      ) : (
+        <Empty />
+      )}
+    </>
   );
 };
 
