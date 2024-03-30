@@ -1,5 +1,9 @@
 import { useAppDispatch, useAppSelector } from "@/states/hooks";
-import { removeOne } from "@/states/playing.slice";
+import {
+  changePlayingSong,
+  removeOne,
+  setPlaying,
+} from "@/states/playing.slice";
 import { SongType } from "@/types/musicInfo";
 import {
   DeleteOutlined,
@@ -28,10 +32,20 @@ const Item = ({ item }: { item: SongType }) => {
         {isPlaying && playingSong.id === item.id ? (
           <>
             <PlayingIcon className={styles.play_status_icon_animate} />
-            <PauseCircleOutlined className={styles.play_status_icon_static} />
+            <PauseCircleOutlined
+              className={styles.play_status_icon_static}
+              onClick={() => {
+                dispatch(setPlaying(false));
+              }}
+            />
           </>
         ) : (
-          <PlayCircleOutlined />
+          <PlayCircleOutlined
+            onClick={() => {
+              dispatch(changePlayingSong(item));
+              dispatch(setPlaying(true));
+            }}
+          />
         )}
       </div>
       <div className={styles.play_info}>

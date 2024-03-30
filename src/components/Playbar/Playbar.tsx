@@ -4,6 +4,7 @@ import {
   playPrev,
   revertPlayingList,
   setPanelVisible,
+  setPlaying,
   shufflePlayingList,
 } from "@/states/playing.slice";
 import {
@@ -49,8 +50,7 @@ const Playbar = () => {
     PlayingSortType.InOrder
   );
 
-  const [isReady, setIsReady] = useState(true);
-  const [isPlay, setIsPlay] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [volume, setVolume] = useState<number>(0);
 
@@ -64,6 +64,7 @@ const Playbar = () => {
     listInAddOrder,
     listInPlayOrder,
     playingSong: song,
+    isPlaying: isPlay,
     panelVisible,
   } = useAppSelector((state) => state.playing);
   const dispatch = useAppDispatch();
@@ -138,6 +139,7 @@ const Playbar = () => {
       dispatch(playNext());
     };
     audioRef.current.addEventListener("ended", ended);
+
     return () => {
       audioRef.current?.removeEventListener("canplay", ready);
       audioRef.current?.removeEventListener("timeupdate", update);
@@ -156,8 +158,10 @@ const Playbar = () => {
   };
 
   useEffect(() => {
-    isPlay ? audioRef.current?.play() : audioRef.current?.pause();
-  }, [isPlay, song]);
+    if (isReady) {
+      isPlay ? audioRef.current?.play() : audioRef.current?.pause();
+    }
+  }, [isReady, isPlay, song]);
 
   useEffect(() => {
     if (playingSortType === 1) {
@@ -233,7 +237,7 @@ const Playbar = () => {
                   styles.play_control_switch_icon,
                   styles.play_control_switch_play
                 )}
-                onClick={() => setIsPlay((v) => !v)}
+                onClick={() => dispatch(setPlaying(true))}
               />
             ) : (
               <PauseCircleOutlined
@@ -241,7 +245,7 @@ const Playbar = () => {
                   styles.play_control_switch_icon,
                   styles.play_control_switch_play
                 )}
-                onClick={() => setIsPlay((v) => !v)}
+                onClick={() => dispatch(setPlaying(false))}
               />
             )}
             <StepForwardOutlined

@@ -86,7 +86,7 @@ const initialState: InitialStateProps = {
   // 播放列表面板是否可见
   panelVisible: false,
   // 是否播放中
-  isPlaying: true,
+  isPlaying: false,
 };
 
 export const playingListSlice = createSlice({
