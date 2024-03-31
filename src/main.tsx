@@ -20,16 +20,19 @@ const routerConfig = [
   {
     name: "首頁",
     path: "/",
+    isMenu: true,
     element: lazyLoad("Home"),
   },
   {
     name: "排行榜",
     path: "/rank",
+    isMenu: true,
     element: lazyLoad("Rank"),
   },
   {
     name: "個人信息",
     path: "/userinfo",
+    isMenu: false,
     element: lazyLoad("UserInfo"),
     children: [
       {
@@ -38,6 +41,12 @@ const routerConfig = [
         element: lazyLoad("UserInfo"),
       },
     ],
+  },
+  {
+    name: "专辑信息",
+    path: "/album/:id",
+    isMenu: false,
+    element: lazyLoad("AlbumInfo"),
   },
 ];
 
