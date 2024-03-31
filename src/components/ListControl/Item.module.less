@@ -14,6 +14,11 @@
     .play_status_icon {
       visibility: hidden;
       position: absolute;
+      transition: color 0.3s;
+
+      &:active {
+        color: fade(@font-color-light, 40);
+      }
     }
 
     .play_status_playing_animate,
