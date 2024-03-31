@@ -7,17 +7,34 @@
 
   .play_status {
     font-size: 24rem;
+    position: relative;
+    width: 24rem;
+    height: 24rem;
 
-    .play_status_icon_static {
-      display: none;
+    .play_status_icon {
+      visibility: hidden;
+      position: absolute;
+    }
+
+    .play_status_playing_animate,
+    .play_status_playing_noanimate,
+    .play_status_play {
+      visibility: visible;
+    }
+
+    .play_status_play_hover {
+      visibility: hidden;
     }
 
     &:hover {
-      .play_status_icon_animate {
-        display: none;
+      .play_status_playing_animate,
+      .play_status_playing_noanimate {
+        visibility: hidden;
       }
-      .play_status_icon_static {
-        display: block;
+
+      .play_status_pause,
+      .play_status_play_hover {
+        visibility: visible;
       }
     }
   }

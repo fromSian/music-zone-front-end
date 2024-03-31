@@ -26,27 +26,52 @@ const Item = ({ item }: { item: SongType }) => {
 
   const [deletePopOpen, setDeletePopOpen] = useState(false);
   return (
-    <div className={styles.play}>
+    <div
+      className={classnames(styles.play, {
+        [styles.playing]: playingSong.id === item.id,
+      })}
+    >
       {/* 是否播放中 & 立即播放 */}
       <div className={styles.play_status}>
-        {isPlaying && playingSong.id === item.id ? (
-          <>
-            <PlayingIcon className={styles.play_status_icon_animate} />
-            <PauseCircleOutlined
-              className={styles.play_status_icon_static}
-              onClick={() => {
-                dispatch(setPlaying(false));
-              }}
-            />
-          </>
-        ) : (
-          <PlayCircleOutlined
-            onClick={() => {
-              dispatch(changePlayingSong(item));
-              dispatch(setPlaying(true));
-            }}
-          />
-        )}
+        <PlayingIcon
+          isAnimate={true}
+          className={classnames(styles.play_status_icon, {
+            [styles.play_status_playing_animate]:
+              playingSong.id === item.id && isPlaying,
+          })}
+        />
+        <PlayingIcon
+          className={classnames(styles.play_status_icon, {
+            [styles.play_status_playing_noanimate]:
+              playingSong.id === item.id && !isPlaying,
+          })}
+        />
+
+        <PlayCircleOutlined
+          className={classnames(
+            styles.play_status_icon,
+            {
+              [styles.play_status_play]: playingSong.id !== item.id,
+            },
+            {
+              [styles.play_status_play_hover]:
+                playingSong.id === item.id && !isPlaying,
+            }
+          )}
+          onClick={() => {
+            dispatch(changePlayingSong(item));
+            dispatch(setPlaying(true));
+          }}
+        />
+
+        <PauseCircleOutlined
+          className={classnames(styles.play_status_icon, {
+            [styles.play_status_pause]: playingSong.id === item.id && isPlaying,
+          })}
+          onClick={() => {
+            dispatch(setPlaying(false));
+          }}
+        />
       </div>
       <div className={styles.play_info}>
         <Tooltip title={item.name}>
