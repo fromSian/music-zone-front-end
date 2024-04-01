@@ -5,16 +5,16 @@ import {
   setPlaying,
 } from "@/states/playing.slice";
 import { SongType } from "@/types/musicInfo";
-import {
-  DeleteOutlined,
-  HeartOutlined,
-  HeartTwoTone,
-  PauseCircleOutlined,
-  PlayCircleOutlined,
-} from "@ant-design/icons";
 import { Popconfirm, Tooltip } from "antd";
 import classnames from "classnames";
 import { useCallback, useState } from "react";
+import {
+  DeleteIcon,
+  HeartFullIcon,
+  HeartLineIcon,
+  PauseIcon,
+  PlayIcon,
+} from "../Icons/Icons";
 import PlayingIcon from "../PlayingIcon/PlayingIcon";
 import styles from "./Item.module.less";
 const Item = ({ item }: { item: SongType }) => {
@@ -47,7 +47,7 @@ const Item = ({ item }: { item: SongType }) => {
           })}
         />
 
-        <PlayCircleOutlined
+        <PlayIcon
           className={classnames(
             styles.play_status_icon,
             {
@@ -64,7 +64,7 @@ const Item = ({ item }: { item: SongType }) => {
           }}
         />
 
-        <PauseCircleOutlined
+        <PauseIcon
           className={classnames(styles.play_status_icon, {
             [styles.play_status_pause]: playingSong.id === item.id && isPlaying,
           })}
@@ -89,7 +89,7 @@ const Item = ({ item }: { item: SongType }) => {
       >
         <Tooltip title={true ? "取消收藏" : "收藏"}>
           <div className={styles.play_operator_love}>
-            {true ? <HeartTwoTone /> : <HeartOutlined />}
+            {true ? <HeartFullIcon /> : <HeartLineIcon />}
           </div>
         </Tooltip>
 
@@ -104,7 +104,7 @@ const Item = ({ item }: { item: SongType }) => {
           cancelText="取消"
           open={deletePopOpen}
         >
-          <DeleteOutlined onClick={() => setDeletePopOpen((v) => !v)} />
+          <DeleteIcon onClick={() => setDeletePopOpen((v) => !v)} />
         </Popconfirm>
       </div>
     </div>

@@ -7,21 +7,24 @@ import {
   setPlaying,
   shufflePlayingList,
 } from "@/states/playing.slice";
-import {
-  HeartOutlined,
-  PauseCircleOutlined,
-  PlayCircleOutlined,
-  StepBackwardOutlined,
-  StepForwardOutlined,
-  UnorderedListOutlined,
-} from "@ant-design/icons";
 import { Spin, Tooltip } from "antd";
 import classnames from "classnames";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import { BsFillMusicPlayerFill } from "react-icons/bs";
-import { FaVolumeDown, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
-import { LiaRandomSolid } from "react-icons/lia";
-import { LuRepeat, LuRepeat1 } from "react-icons/lu";
+import {
+  HeartLineIcon,
+  PauseIcon,
+  PlayIcon,
+  PlayListIcon,
+  PlayModeOneIcon,
+  PlayModeOrderIcon,
+  PlayModeShuffleIcon,
+  PlayNextIcon,
+  PlayPrevIcon,
+  VolumeHighIcon,
+  VolumeLowIcon,
+  VolumeMuteIcon,
+} from "../Icons/Icons";
 import PlayingList from "./PlayingList";
 import styles from "./playbar.module.less";
 
@@ -226,13 +229,13 @@ const Playbar = () => {
 
         <div className={styles.play_control}>
           <div className={styles.play_control_switch}>
-            <HeartOutlined className={styles.play_control_switch_icon} />
-            <StepBackwardOutlined
+            <HeartLineIcon className={styles.play_control_switch_icon} />
+            <PlayPrevIcon
               className={styles.play_control_switch_icon}
               onClick={() => dispatch(playPrev())}
             />
             {!isPlay ? (
-              <PlayCircleOutlined
+              <PlayIcon
                 className={classnames(
                   styles.play_control_switch_icon,
                   styles.play_control_switch_play
@@ -240,7 +243,7 @@ const Playbar = () => {
                 onClick={() => dispatch(setPlaying(true))}
               />
             ) : (
-              <PauseCircleOutlined
+              <PauseIcon
                 className={classnames(
                   styles.play_control_switch_icon,
                   styles.play_control_switch_play
@@ -248,22 +251,26 @@ const Playbar = () => {
                 onClick={() => dispatch(setPlaying(false))}
               />
             )}
-            <StepForwardOutlined
+            <PlayNextIcon
               className={styles.play_control_switch_icon}
               onClick={() => dispatch(playNext())}
             />
             <div onClick={() => setPlayingSortType((v) => (v > 1 ? 0 : v + 1))}>
               {/* 顺序循环 */}
               {playingSortType === PlayingSortType.InOrder && (
-                <LuRepeat className={styles.play_control_switch_icon} />
+                <PlayModeOrderIcon
+                  className={styles.play_control_switch_icon}
+                />
               )}
               {/* 单曲循环 */}
               {playingSortType === PlayingSortType.One && (
-                <LuRepeat1 className={styles.play_control_switch_icon} />
+                <PlayModeOneIcon className={styles.play_control_switch_icon} />
               )}
               {/* 乱序播放 */}
               {playingSortType === PlayingSortType.Random && (
-                <LiaRandomSolid className={styles.play_control_switch_icon} />
+                <PlayModeShuffleIcon
+                  className={styles.play_control_switch_icon}
+                />
               )}
             </div>
           </div>
@@ -299,7 +306,7 @@ const Playbar = () => {
         <div className={styles.playbar_operator}>
           <div className={styles.playbar_operator_volume}>
             {volume === 0 && (
-              <FaVolumeMute
+              <VolumeMuteIcon
                 className={styles.playbar_operator_volume_icon}
                 onClick={() => {
                   if (volumeBakRef.current && audioRef.current) {
@@ -310,13 +317,13 @@ const Playbar = () => {
               />
             )}
             {volume > 0 && volume < 0.5 && (
-              <FaVolumeDown
+              <VolumeLowIcon
                 onClick={mute}
                 className={styles.playbar_operator_volume_icon}
               />
             )}
             {volume > 0.5 && (
-              <FaVolumeUp
+              <VolumeHighIcon
                 onClick={mute}
                 className={styles.playbar_operator_volume_icon}
               />
@@ -340,7 +347,7 @@ const Playbar = () => {
               ></div>
             </div>
           </div>
-          <UnorderedListOutlined
+          <PlayListIcon
             className={classnames(styles.playlist_icon, {
               [styles.playlist_icon_visible]: panelVisible,
             })}
