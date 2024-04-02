@@ -1,8 +1,8 @@
 import audio1 from "@/asset/audios/sample1.m4a";
 import audio2 from "@/asset/audios/sample2.m4a";
 import { useAppDispatch } from "@/states/hooks";
-import { playOneAlbum } from "@/states/playing.slice";
-import { AlbumType } from "@/types/musicInfo";
+import { addOne, playOneAlbum } from "@/states/playing.slice";
+import { AlbumType, SongType } from "@/types/musicInfo";
 import { formatSecondsString } from "@/utils/time";
 import { Button, Empty, Tooltip } from "antd";
 import { useCallback, useRef } from "react";
@@ -52,6 +52,9 @@ const Album = () => {
 
   const album = albumRef.current;
 
+  /**
+   * 顺序播放
+   */
   const handlePlayInOrder = useCallback(() => {
     const _list = album.songs.map((item) => ({
       name: item.name,
@@ -63,6 +66,9 @@ const Album = () => {
     dispatch(playOneAlbum({ songs: _list }));
   }, [album]);
 
+  /**
+   * 乱序播放
+   */
   const handlePlayShuffle = useCallback(() => {
     const _list = album.songs.map((item) => ({
       name: item.name,
@@ -74,6 +80,12 @@ const Album = () => {
     dispatch(playOneAlbum({ songs: _list, isShuffle: true }));
   }, [album]);
 
+  /**
+   * 加入播放列表
+   */
+  const addToPlayList = useCallback((song: SongType) => {
+    dispatch(addOne(song));
+  }, []);
   return (
     <div className={styles.album}>
       <div className={styles.album_header} ref={headerRef}>
@@ -129,6 +141,15 @@ const Album = () => {
                   <div className={styles.album_songs_item_content_operator}>
                     <Tooltip title={"加入播放列表"}>
                       <AddIcon
+                        onClick={() => {
+                          addToPlayList({
+                            name: song.name,
+                            id: song.id,
+                            audio: song.audio,
+                            album: album.name,
+                            artist: album.artist,
+                          });
+                        }}
                         className={
                           styles.album_songs_item_content_operator_icon
                         }

@@ -102,7 +102,12 @@ export const playingListSlice = createSlice({
     },
     addOne: (state, action: PayloadAction<SongType>) => {
       state.listInAddOrder = [...state.listInAddOrder, action.payload];
-      // 修改listInPlayingOrder
+
+      if (state.playingSortType === PlayingSortType.Random) {
+        state.listInPlayOrder = shuffle(state.listInAddOrder);
+      } else {
+        state.listInPlayOrder = [...state.listInPlayOrder, action.payload];
+      }
     },
     removeOne: (state, action: PayloadAction<string | number>) => {
       state.listInAddOrder = state.listInAddOrder.filter(
