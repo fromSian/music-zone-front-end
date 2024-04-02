@@ -12,14 +12,13 @@
 
 .playlist {
   position: fixed;
-  bottom: 100rem;
-  min-height: 20vh;
-  padding: 16rem;
+  bottom: 96rem;
+  padding: 12rem 16rem;
   right: 16rem;
   background: @bg-dark-gray;
   z-index: 9;
-  max-height: 60vh;
-  overflow-y: auto;
+  height: 60vh;
+  overflow-y: hidden;
   border-radius: 8rem;
 
   .playlist_header {
@@ -28,6 +27,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 28rem;
 
     .playlist_header_close {
       cursor: pointer;
@@ -41,6 +41,11 @@
         transform: scale(1.15);
       }
     }
+  }
+
+  .playlist_list {
+    height: calc(100% - 28rem - 16rem);
+    overflow-y: auto;
   }
 }
 .playlist_in {

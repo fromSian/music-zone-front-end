@@ -42,7 +42,9 @@ const PlayingList = () => {
           <CloseOutlined />
         </div>
       </header>
-      <ListControl />
+      <div className={styles.playlist_list}>
+        <ListControl />
+      </div>
     </div>
   );
 };
