@@ -7,7 +7,7 @@ import audio2 from "../asset/audios/sample2.m4a";
 interface InitialStateProps {
   listInAddOrder: SongType[];
   listInPlayOrder: SongType[];
-  playingSong: SongType;
+  playingSong: SongType | null;
   panelVisible: boolean;
   isPlaying: boolean;
 }
@@ -93,6 +93,9 @@ export const playingListSlice = createSlice({
   name: "playingList",
   initialState: initialState,
   reducers: {
+    changeAddList: (state, action: PayloadAction<SongType[]>) => {
+      state.listInAddOrder = action.payload;
+    },
     addOne: () => {},
     removeOne: (state, action: PayloadAction<string | number>) => {
       state.listInAddOrder = state.listInAddOrder.filter(
@@ -116,7 +119,7 @@ export const playingListSlice = createSlice({
     },
     playNext: (state) => {
       const nowIndex = state.listInPlayOrder.findIndex(
-        (item) => item.id === state.playingSong.id
+        (item) => item.id === state.playingSong?.id
       );
       let nextIndex = nowIndex + 1;
       if (nextIndex === state.listInPlayOrder.length) {
@@ -126,7 +129,7 @@ export const playingListSlice = createSlice({
     },
     playPrev: (state) => {
       const nowIndex = state.listInPlayOrder.findIndex(
-        (item) => item.id === state.playingSong.id
+        (item) => item.id === state.playingSong?.id
       );
       let prevIndex = nowIndex - 1;
       if (prevIndex < 0) {
@@ -140,10 +143,31 @@ export const playingListSlice = createSlice({
     setPlaying: (state, action: PayloadAction<boolean>) => {
       state.isPlaying = action.payload;
     },
+    playOneAlbum: (
+      state,
+      action: PayloadAction<{ songs: SongType[]; isShuffle?: boolean }>
+    ) => {
+      let { songs, isShuffle } = action.payload;
+      if (!songs) {
+        songs = [];
+      }
+      state.listInAddOrder = songs;
+      state.listInPlayOrder = isShuffle ? shuffle(songs) : songs;
+
+      if (songs.length) {
+        state.playingSong = state.listInPlayOrder[0];
+        state.isPlaying = true;
+      } else {
+        state.playingSong = null;
+        state.isPlaying = false;
+      }
+    },
   },
 });
 
 export const {
+  playOneAlbum,
+  changeAddList,
   addOne,
   removeOne,
   revertPlayingList,

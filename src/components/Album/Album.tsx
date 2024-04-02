@@ -1,6 +1,11 @@
+import audio1 from "@/asset/audios/sample1.m4a";
+import audio2 from "@/asset/audios/sample2.m4a";
+import { useAppDispatch } from "@/states/hooks";
+import { playOneAlbum } from "@/states/playing.slice";
+import { AlbumType } from "@/types/musicInfo";
 import { formatSecondsString } from "@/utils/time";
 import { Button, Empty, Tooltip } from "antd";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import {
   AddIcon,
   HeartLineIcon,
@@ -10,66 +15,64 @@ import {
 } from "../Icons/Icons";
 import styles from "./Album.module.less";
 const Album = () => {
+  const dispatch = useAppDispatch();
   const headerRef = useRef<HTMLDivElement | null>(null);
-  const albumRef = useRef({
+  const albumRef = useRef<AlbumType>({
+    id: "1",
     name: "给天王星",
     artist: "郑宜农",
     image: "../../asset/images/albums/561710387733_.pic.jpg",
     songs: [
       {
         name: "2017, 你",
-        id: "90",
+        id: "1-1",
         duration: 7832,
+        audio: audio1,
       },
       {
         name: "591",
-        id: "23",
+        id: "1-2",
         duration: 7832,
+        audio: audio2,
       },
       {
-        name: "2017, 你",
-        id: "90",
+        name: "2017, 你1",
+        id: "1-3",
         duration: 7832,
+        audio: audio1,
       },
       {
-        name: "591",
-        id: "23",
+        name: "5911",
+        id: "1-4",
         duration: 7832,
-      },
-      {
-        name: "2017, 你",
-        id: "90",
-        duration: 7832,
-      },
-      {
-        name: "591",
-        id: "23",
-        duration: 7832,
-      },
-      {
-        name: "2017, 你",
-        id: "90",
-        duration: 7832,
-      },
-      {
-        name: "591",
-        id: "23",
-        duration: 7832,
-      },
-      {
-        name: "2017, 你",
-        id: "90",
-        duration: 7832,
-      },
-      {
-        name: "591",
-        id: "23",
-        duration: 7832,
+        audio: audio2,
       },
     ],
   });
 
   const album = albumRef.current;
+
+  const handlePlayInOrder = useCallback(() => {
+    const _list = album.songs.map((item) => ({
+      name: item.name,
+      audio: item.audio,
+      id: item.id,
+      artist: album.artist,
+      album: album.name,
+    }));
+    dispatch(playOneAlbum({ songs: _list }));
+  }, [album]);
+
+  const handlePlayShuffle = useCallback(() => {
+    const _list = album.songs.map((item) => ({
+      name: item.name,
+      audio: item.audio,
+      id: item.id,
+      artist: album.artist,
+      album: album.name,
+    }));
+    dispatch(playOneAlbum({ songs: _list, isShuffle: true }));
+  }, [album]);
 
   return (
     <div className={styles.album}>
@@ -91,10 +94,18 @@ const Album = () => {
               album.songs.reduce((prev, cur) => prev + cur.duration, 0)
             )}`}</p>
             <div className={styles.album_info_play_control}>
-              <Button type="primary" icon={<PlayModeOrderIcon />}>
+              <Button
+                type="primary"
+                icon={<PlayModeOrderIcon />}
+                onClick={handlePlayInOrder}
+              >
                 播放
               </Button>
-              <Button type="primary" icon={<PlayModeShuffleIcon />}>
+              <Button
+                type="primary"
+                icon={<PlayModeShuffleIcon />}
+                onClick={handlePlayShuffle}
+              >
                 乱序播放
               </Button>
             </div>
