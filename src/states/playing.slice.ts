@@ -1,4 +1,5 @@
 import { SongType } from "@/types/musicInfo";
+import { PlayingSortType } from "@/types/playInfo";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { shuffle } from "lodash";
 import audio1 from "../asset/audios/sample1.m4a";
@@ -10,6 +11,7 @@ interface InitialStateProps {
   playingSong: SongType | null;
   panelVisible: boolean;
   isPlaying: boolean;
+  playingSortType: PlayingSortType;
 }
 
 const initialState: InitialStateProps = {
@@ -87,6 +89,8 @@ const initialState: InitialStateProps = {
   panelVisible: false,
   // 是否播放中
   isPlaying: false,
+  // 播放模式
+  playingSortType: PlayingSortType.InOrder,
 };
 
 export const playingListSlice = createSlice({
@@ -96,7 +100,10 @@ export const playingListSlice = createSlice({
     changeAddList: (state, action: PayloadAction<SongType[]>) => {
       state.listInAddOrder = action.payload;
     },
-    addOne: () => {},
+    addOne: (state, action: PayloadAction<SongType>) => {
+      state.listInAddOrder = [...state.listInAddOrder, action.payload];
+      // 修改listInPlayingOrder
+    },
     removeOne: (state, action: PayloadAction<string | number>) => {
       state.listInAddOrder = state.listInAddOrder.filter(
         (item) => item.id != action.payload
@@ -162,6 +169,9 @@ export const playingListSlice = createSlice({
         state.isPlaying = false;
       }
     },
+    changePlayingSortType: (state, action: PayloadAction<number>) => {
+      state.playingSortType = action.payload;
+    },
   },
 });
 
@@ -178,6 +188,7 @@ export const {
   playPrev,
   setPanelVisible,
   setPlaying,
+  changePlayingSortType,
 } = playingListSlice.actions;
 
 export default playingListSlice.reducer;

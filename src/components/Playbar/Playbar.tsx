@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/states/hooks";
 import {
+  changePlayingSortType,
   playNext,
   playPrev,
   revertPlayingList,
@@ -7,6 +8,7 @@ import {
   setPlaying,
   shufflePlayingList,
 } from "@/states/playing.slice";
+import { PlayingSortType } from "@/types/playInfo";
 import { formatTime } from "@/utils/time";
 import { Spin, Tooltip } from "antd";
 import classnames from "classnames";
@@ -29,17 +31,6 @@ import {
 import PlayingList from "./PlayingList";
 import styles from "./playbar.module.less";
 
-/**
- * InOrder = 顺序循环 = 0
- * Random = 乱序循环 = 1
- * One = 单曲循环 = 2
- */
-enum PlayingSortType {
-  InOrder,
-  Random,
-  One,
-}
-
 const Playbar = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const volumeDivRef = useRef<HTMLDivElement | null>(null);
@@ -50,10 +41,6 @@ const Playbar = () => {
 
   const [nameLeft, setNameLeft] = useState<number>(0);
 
-  const [playingSortType, setPlayingSortType] = useState<number>(
-    PlayingSortType.InOrder
-  );
-
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [volume, setVolume] = useState<number>(0);
@@ -61,7 +48,6 @@ const Playbar = () => {
   const [duration, setDuration] = useState<number>(0);
   const [current, setCurrent] = useState<number>(0);
 
-  const [playListVisible, setPlayListVisible] = useState(false);
   const volumeBakRef = useRef<number>();
 
   const {
@@ -70,6 +56,7 @@ const Playbar = () => {
     playingSong: song,
     isPlaying: isPlay,
     panelVisible,
+    playingSortType,
   } = useAppSelector((state) => state.playing);
   const dispatch = useAppDispatch();
 
@@ -241,7 +228,15 @@ const Playbar = () => {
               className={styles.play_control_switch_icon}
               onClick={() => dispatch(playNext())}
             />
-            <div onClick={() => setPlayingSortType((v) => (v > 1 ? 0 : v + 1))}>
+            <div
+              onClick={() =>
+                dispatch(
+                  changePlayingSortType(
+                    playingSortType > 1 ? 0 : playingSortType + 1
+                  )
+                )
+              }
+            >
               {/* 顺序循环 */}
               {playingSortType === PlayingSortType.InOrder && (
                 <PlayModeOrderIcon
