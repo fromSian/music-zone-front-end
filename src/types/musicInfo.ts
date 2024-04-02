@@ -11,10 +11,11 @@ export type SongType = BasicSongType & {
 
 export type ArtistType = {};
 
+export type AlbumSongType = BasicSongType & { duration: number };
 export type AlbumType = {
   id: number | string;
   name: string;
   image: string;
   artist: string;
-  songs: (BasicSongType & { duration: number })[];
+  songs: AlbumSongType[];
 };

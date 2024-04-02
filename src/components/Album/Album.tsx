@@ -2,7 +2,7 @@ import audio1 from "@/asset/audios/sample1.m4a";
 import audio2 from "@/asset/audios/sample2.m4a";
 import { useAppDispatch } from "@/states/hooks";
 import { addOne, playOneAlbum } from "@/states/playing.slice";
-import { AlbumType, SongType } from "@/types/musicInfo";
+import { AlbumSongType, AlbumType, SongType } from "@/types/musicInfo";
 import { formatSecondsString } from "@/utils/time";
 import { Button, Empty, Tooltip } from "antd";
 import { useCallback, useRef } from "react";
@@ -84,8 +84,26 @@ const Album = () => {
    * 加入播放列表
    */
   const addToPlayList = useCallback((song: SongType) => {
-    dispatch(addOne(song));
+    dispatch(addOne({ song }));
   }, []);
+
+  const handlePlayOneSong = useCallback((song: SongType) => {
+    dispatch(addOne({ song, isPlayNow: true }));
+  }, []);
+
+  const formatSongType = (
+    item: AlbumSongType,
+    album_name: string,
+    album_artist: string
+  ) => {
+    return {
+      id: item.id,
+      name: item.name,
+      audio: item.audio,
+      album: album_name,
+      artist: album_artist,
+    };
+  };
   return (
     <div className={styles.album}>
       <div className={styles.album_header} ref={headerRef}>
@@ -142,13 +160,9 @@ const Album = () => {
                     <Tooltip title={"加入播放列表"}>
                       <AddIcon
                         onClick={() => {
-                          addToPlayList({
-                            name: song.name,
-                            id: song.id,
-                            audio: song.audio,
-                            album: album.name,
-                            artist: album.artist,
-                          });
+                          addToPlayList(
+                            formatSongType(song, album.name, album.artist)
+                          );
                         }}
                         className={
                           styles.album_songs_item_content_operator_icon
@@ -164,6 +178,11 @@ const Album = () => {
                     </Tooltip>
                     <Tooltip title={"播放"}>
                       <PlayIcon
+                        onClick={() =>
+                          handlePlayOneSong(
+                            formatSongType(song, album.name, album.artist)
+                          )
+                        }
                         className={
                           styles.album_songs_item_content_operator_icon
                         }

@@ -100,13 +100,22 @@ export const playingListSlice = createSlice({
     changeAddList: (state, action: PayloadAction<SongType[]>) => {
       state.listInAddOrder = action.payload;
     },
-    addOne: (state, action: PayloadAction<SongType>) => {
-      state.listInAddOrder = [...state.listInAddOrder, action.payload];
+    addOne: (
+      state,
+      action: PayloadAction<{ song: SongType; isPlayNow?: boolean }>
+    ) => {
+      let { song, isPlayNow } = action.payload;
+      state.listInAddOrder = [...state.listInAddOrder, song];
 
       if (state.playingSortType === PlayingSortType.Random) {
         state.listInPlayOrder = shuffle(state.listInAddOrder);
       } else {
-        state.listInPlayOrder = [...state.listInPlayOrder, action.payload];
+        state.listInPlayOrder = [...state.listInPlayOrder, song];
+      }
+
+      if (isPlayNow) {
+        state.playingSong = song;
+        state.isPlaying = true;
       }
     },
     removeOne: (state, action: PayloadAction<string | number>) => {
