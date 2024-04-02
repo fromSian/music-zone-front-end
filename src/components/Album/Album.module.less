@@ -1,0 +1,140 @@
+@media screen and (min-width: 1023px) {
+  .album_songs_item {
+    width: calc(50% - 8rem);
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .album_songs_item {
+    width: 100%;
+  }
+}
+
+.album {
+  display: flex;
+  gap: 16rem;
+  flex-wrap: wrap;
+  height: 100%;
+
+  .album_header {
+    width: 100%;
+    display: flex;
+    height: 150rem;
+    gap: 16rem;
+    .album_image {
+      .album_image_main {
+        max-width: 100%;
+        max-height: 100%;
+        box-shadow: 0 0 20rem rgba(255, 255, 255, 0.8);
+      }
+    }
+    .album_info {
+      flex: 1 1 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      .album_info_name {
+        .header_title();
+        width: 100%;
+      }
+
+      .album_info_artist {
+        color: @font-color-light;
+        width: 100%;
+      }
+
+      .album_info_bottom {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: center;
+        .album_info_play_control {
+          :global {
+            .ant-btn {
+              .ant-btn-icon {
+                vertical-align: middle;
+              }
+
+              &:not(:last-child) {
+                margin-right: 8rem;
+              }
+            }
+          }
+        }
+
+        .album_info_detail {
+          color: fade(@font-color-light, 80);
+          font-size: 12rem;
+        }
+      }
+    }
+  }
+
+  .album_songs {
+    width: 100%;
+    height: calc(100% - 150rem - 16rem);
+    overflow-y: auto;
+    display: flex;
+    gap: 16rem;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    .album_songs_item {
+      list-style-type: none;
+
+      .album_songs_item_content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: @bg-main;
+        border-radius: 4rem;
+        transition: 0.5s;
+        padding: 10rem 8rem;
+        gap: 8rem;
+
+        .album_songs_item_content_index {
+          width: 20rem;
+          height: 20rem;
+          border-radius: 50%;
+          background: @bg-gray;
+          text-align: center;
+          line-height: 20rem;
+        }
+
+        .album_songs_item_content_info {
+          flex: 1 1 0%;
+
+          .album_songs_item_content_name {
+            font-size: 16rem;
+            font-weight: 500;
+          }
+        }
+
+        .album_songs_item_content_operator {
+          display: flex;
+          gap: 6rem;
+          justify-content: space-between;
+          align-items: center;
+
+          .album_songs_item_content_operator_icon {
+            cursor: pointer;
+
+            &:nth-child(1) {
+              transform: translateX(20rem) scale(0);
+              transition: 0.3s;
+            }
+          }
+        }
+
+        &:hover {
+          background: @bg-main-highlight;
+
+          .album_songs_item_content_operator
+            .album_songs_item_content_operator_icon:nth-child(1) {
+            transform: translateX(0) scale(1);
+          }
+        }
+      }
+    }
+  }
+}
