@@ -66,7 +66,6 @@ const MusicLibrary = () => {
   const [activeMode, setActiveMode] = useState<string>("card");
 
   const loadMoreData = () => {
-    console.log(loading);
     if (loading) {
       return;
     }
