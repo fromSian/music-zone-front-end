@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import type { RouteObject } from "react-router-dom";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import Playbar from "../Playbar/Playbar";
-import AvatarCustom from "./Avatar";
 import SearchBar from "./Search";
 
 const { Header, Content, Footer } = Layout;
@@ -47,7 +46,7 @@ const HeaderCustom = ({ routerConfig }: HeaderProps) => {
         />
 
         <SearchBar />
-        <AvatarCustom />
+        {/* <AvatarCustom /> */}
       </Header>
       <Content>
         <Outlet />
