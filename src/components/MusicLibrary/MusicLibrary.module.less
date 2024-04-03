@@ -1,16 +1,40 @@
 .music_library {
   height: 100%;
   .music_library_header {
-    margin-bottom: 12rem;
+    margin-bottom: 16rem;
+    display: flex;
+    justify-content: space-between;
 
-    .tag_disabled {
+    .tag_disabled,
+    .music_library_header_mode_item_disabled {
       color: fade(@font-color-light, 50);
       cursor: not-allowed;
+    }
+
+    .music_library_header_mode {
+      display: flex;
+      background: fade(#fff, 80);
+      border-radius: 2rem;
+      .music_library_header_mode_item {
+        padding: 4rem 10rem;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .music_library_header_mode_item_active {
+        background: @bg-gray;
+        border-radius: inherit;
+        color: @color-primary;
+      }
+      .music_library_header_mode_item_disabled {
+        background: fade(#fff, 60);
+        cursor: not-allowed;
+      }
     }
   }
 
   .music_library_content {
-    height: calc(100% - 20rem - 12rem);
+    height: calc(100% - 20rem - 16rem);
     overflow-y: auto;
     .music_library_content_list {
       display: flex;

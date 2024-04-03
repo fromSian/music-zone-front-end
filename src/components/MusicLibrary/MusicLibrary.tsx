@@ -1,4 +1,5 @@
 import { Divider, Spin, Tag } from "antd";
+import classnames from "classnames";
 import { map } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -20,7 +21,7 @@ interface DataType {
   nat: string;
 }
 
-const typeOptions = [
+const tagOptions = [
   {
     label: "专辑",
     key: "album",
@@ -38,12 +39,31 @@ const typeOptions = [
   },
 ];
 
+const modeOptions = [
+  {
+    label: "卡片模式",
+    key: "card",
+    disabled: false,
+  },
+  {
+    label: "列表模式",
+    key: "list",
+    disabled: true,
+  },
+];
+
 const MusicLibrary = () => {
   const contentDivRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<DataType[]>([]);
 
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    map(
+      tagOptions.filter((item) => !item.disabled),
+      "key"
+    )
+  );
+  const [activeMode, setActiveMode] = useState<string>("card");
 
   const loadMoreData = () => {
     console.log(loading);
@@ -69,7 +89,7 @@ const MusicLibrary = () => {
   }, []);
 
   const handleTagChange = useCallback(
-    (tag: (typeof typeOptions)[0], checked: boolean) => {
+    (tag: (typeof tagOptions)[0], checked: boolean) => {
       if (tag.disabled) {
         return;
       }
@@ -90,13 +110,13 @@ const MusicLibrary = () => {
             key={"all"}
             checked={
               selectedTags.length ===
-              typeOptions.filter((item) => !item.disabled).length
+              tagOptions.filter((item) => !item.disabled).length
             }
             onChange={(checked) => {
               if (checked) {
                 setSelectedTags(
                   map(
-                    typeOptions.filter((item) => !item.disabled),
+                    tagOptions.filter((item) => !item.disabled),
                     "key"
                   )
                 );
@@ -107,7 +127,7 @@ const MusicLibrary = () => {
           >
             全选
           </Tag.CheckableTag>
-          {typeOptions.map((tag) => (
+          {tagOptions.map((tag) => (
             <Tag.CheckableTag
               className={tag.disabled ? styles.tag_disabled : ""}
               key={tag.key}
@@ -116,6 +136,33 @@ const MusicLibrary = () => {
             >
               {tag.label}
             </Tag.CheckableTag>
+          ))}
+        </div>
+
+        <div className={styles.music_library_header_mode}>
+          {modeOptions.map((mode) => (
+            <div
+              key={mode.key}
+              className={classnames(
+                styles.music_library_header_mode_item,
+                {
+                  [styles.music_library_header_mode_item_disabled]:
+                    mode.disabled,
+                },
+                {
+                  [styles.music_library_header_mode_item_active]:
+                    activeMode === mode.key,
+                }
+              )}
+              onClick={() => {
+                if (mode.disabled) {
+                  return;
+                }
+                setActiveMode(mode.key);
+              }}
+            >
+              {mode.label}
+            </div>
           ))}
         </div>
       </div>
