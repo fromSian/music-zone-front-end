@@ -1,0 +1,42 @@
+.recently {
+  height: calc(100% - 40vh - 16rem);
+  margin-top: 16rem;
+  .recently_header {
+    .header_title();
+  }
+  .recently_content {
+    height: calc(100% - 24rem - 16rem);
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16rem;
+    align-content: flex-start;
+
+    .recently_content_item {
+      display: flex;
+      gap: 8rem;
+      border-radius: 4rem;
+      background: @bg-dark;
+      padding: 8rem 10rem;
+      width: calc((100% - 48rem) / 4);
+      align-items: center;
+      height: max-content;
+
+      .recently_content_item_image {
+        width: 40rem;
+        height: 40rem;
+        text-align: center;
+        vertical-align: middle;
+
+        > img {
+          max-width: 100%;
+          max-height: 100%;
+        }
+      }
+
+      .recently_content_item_name {
+      }
+    }
+  }
+}
