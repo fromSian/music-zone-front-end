@@ -30,6 +30,12 @@ const routerConfig = [
     element: lazyLoad("Rank"),
   },
   {
+    name: "音乐库",
+    path: "/library",
+    isMenu: true,
+    element: lazyLoad("Library"),
+  },
+  {
     name: "個人信息",
     path: "/userinfo",
     isMenu: false,

@@ -1,0 +1,42 @@
+.music_library {
+  height: 100%;
+  .music_library_header {
+    margin-bottom: 12rem;
+
+    .tag_disabled {
+      color: fade(@font-color-light, 50);
+      cursor: not-allowed;
+    }
+  }
+
+  .music_library_content {
+    height: calc(100% - 20rem - 12rem);
+    overflow-y: auto;
+    .music_library_content_list {
+      display: flex;
+      gap: 16rem;
+      flex-wrap: wrap;
+      justify-content: space-evenly;
+    }
+    .music_library_content_list_item {
+      .music_library_content_list_item_image {
+        width: 120rem;
+        height: 120rem;
+        background: @bg-gray;
+        text-align: center;
+        vertical-align: middle;
+
+        .music_library_content_list_item_image_main {
+          max-width: 100%;
+          max-height: 100%;
+        }
+      }
+
+      .music_library_content_list_item_name {
+        margin-top: 4rem;
+        font-weight: 500;
+        font-size: 16rem;
+      }
+    }
+  }
+}
