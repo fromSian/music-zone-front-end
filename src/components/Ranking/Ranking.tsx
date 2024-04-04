@@ -1,13 +1,14 @@
-import { Select, Tooltip } from "antd";
+import { Popover, Select, Tooltip } from "antd";
 import classnames from "classnames";
 import { shuffle } from "lodash";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { BsFillMusicPlayerFill } from "react-icons/bs";
 import { AddIcon, HeartLineIcon, PlayIcon } from "../Icons/Icons";
 import { rankingSongs, rankingTypes } from "./data";
 import styles from "./index.module.less";
 
 const Ranking = () => {
+  const wrapRef = useRef<HTMLDivElement | null>(null);
   const [selectedType, setSelectedType] = useState<string | number>(
     rankingTypes[0].value
   );
@@ -18,8 +19,23 @@ const Ranking = () => {
     setSelectedType(value);
   };
 
+  const [playlist, setPlaylist] = useState([
+    {
+      id: "1",
+      name: "1",
+    },
+    {
+      id: "2",
+      name: "2",
+    },
+  ]);
+
+  const handleAddToPlaylist = useCallback(() => {
+    console.log("add");
+  }, []);
+
   return (
-    <div className={styles.ranking}>
+    <div className={styles.ranking} ref={wrapRef}>
       <div className={styles.list_select}>
         <ul>
           {rankingTypes.map((type) => (
@@ -73,11 +89,30 @@ const Ranking = () => {
                   </p>
                 </div>
                 <div className={styles.ranking_list_item_content_operator}>
-                  <Tooltip title={"加入播放列表"}>
+                  <Popover
+                    rootClassName={styles.playlist}
+                    placement="left"
+                    getPopupContainer={() => wrapRef.current as HTMLElement}
+                    content={
+                      <>
+                        {playlist.map((item) => (
+                          <div
+                            className={styles.playlist_content}
+                            key={item.id}
+                            onClick={handleAddToPlaylist}
+                          >
+                            加入 <a>{item.name}</a>
+                          </div>
+                        ))}
+                      </>
+                    }
+                    title={"加入播放列表/歌单"}
+                    trigger={"click"}
+                  >
                     <AddIcon
                       className={styles.ranking_list_item_content_operator_icon}
                     />
-                  </Tooltip>
+                  </Popover>
                   <Tooltip title={"喜欢"}>
                     <HeartLineIcon
                       className={styles.ranking_list_item_content_operator_icon}

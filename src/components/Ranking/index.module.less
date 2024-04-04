@@ -1,201 +1,202 @@
 .ranking {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .list_select {
-    flex: 0 0 20%;
-    max-height: calc(100vh - 64rem - 32rem);
-    overflow-y: auto;
+  flex: 0 0 20%;
+  max-height: calc(100vh - 64rem - 32rem);
+  overflow-y: auto;
 
-    .list_select_item {
-        list-style-type: none;
-        cursor: pointer;
-        position: relative;
+  .list_select_item {
+    list-style-type: none;
+    cursor: pointer;
+    position: relative;
 
-        &:not(:last-child) {
-            margin-bottom: 16rem;
-        }
-
-
-        .list_select_item_content {
-            display: flex;
-            height: 24rem;
-            align-items: center;
-            cursor: pointer;
-
-            .list_select_item_content_line {
-                width: 2rem;
-                height: 80%;
-                background: @color-primary;
-                opacity: 0;
-                transition: .3s;
-            }
-
-
-            .list_select_item_content_label {
-                transition: .3s;
-            }
-        }
-
-
-        &:hover,
-        &.list_select_item_active {
-
-            .list_select_item_content_line {
-                opacity: 1;
-            }
-
-            .list_select_item_content_label {
-                transform: translateX(8rem);
-            }
-        }
-
-        &.list_select_item_active {
-            color: @color-primary;
-            font-weight: 500;
-        }
+    &:not(:last-child) {
+      margin-bottom: 16rem;
     }
+
+    .list_select_item_content {
+      display: flex;
+      height: 24rem;
+      align-items: center;
+      cursor: pointer;
+
+      .list_select_item_content_line {
+        width: 2rem;
+        height: 80%;
+        background: @color-primary;
+        opacity: 0;
+        transition: 0.3s;
+      }
+
+      .list_select_item_content_label {
+        transition: 0.3s;
+      }
+    }
+
+    &:hover,
+    &.list_select_item_active {
+      .list_select_item_content_line {
+        opacity: 1;
+      }
+
+      .list_select_item_content_label {
+        transform: translateX(8rem);
+      }
+    }
+
+    &.list_select_item_active {
+      color: @color-primary;
+      font-weight: 500;
+    }
+  }
 }
 
-
+.playlist {
+  .playlist_content {
+    cursor: pointer;
+  }
+}
 .dropdown_select {
-    flex: 0 0 100%;
-    margin-bottom: 16rem;
+  flex: 0 0 100%;
+  margin-bottom: 16rem;
 
-    :global {
-        .ant-select {
-            width: 100%;
-        }
+  :global {
+    .ant-select {
+      width: 100%;
     }
+  }
 }
-
 
 @media screen and (min-width: 431px) {
-    .dropdown_select {
-        display: none
-    }
+  .dropdown_select {
+    display: none;
+  }
 
-    .list_select {
-        display: block;
-    }
+  .list_select {
+    display: block;
+  }
 }
 
 @media screen and (max-width: 430px) {
-    .dropdown_select {
-        display: block
-    }
+  .dropdown_select {
+    display: block;
+  }
 
-    .list_select {
-        display: none;
-    }
+  .list_select {
+    display: none;
+  }
 }
 
 .ranking_list {
-    flex: 1 1 80%;
+  flex: 1 1 80%;
 
-    .ranking_list_item {
-        list-style-type: none;
+  .ranking_list_item {
+    list-style-type: none;
 
-        &:not(:last-child) {
-            margin-bottom: 16rem;
-        }
-
-        .ranking_list_item_content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: @bg-main;
-            border-radius: 4rem;
-            transition: .5s;
-            padding: 10rem 8rem;
-            gap: 8rem;
-
-            .ranking_list_item_content_index {
-                width: 20rem;
-                height: 20rem;
-                border-radius: 50%;
-                background: @bg-gray;
-                text-align: center;
-                line-height: 20rem;
-            }
-
-            .ranking_list_item_content_image {
-                width: 40rem;
-                height: 40rem;
-                border-radius: 4rem;
-                background: @bg-gray;
-                position: relative;
-                cursor: pointer;
-
-                .ranking_list_item_content_image_main {
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                    position: absolute;
-                    transition: filter .3s;
-                }
-
-                .ranking_list_item_content_image_play {
-                    position: absolute;
-                    opacity: 0;
-                    font-size: 24rem;
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                    transition: opacity .3s;
-                }
-
-                &:hover {
-
-                    .ranking_list_item_content_image_main {
-                        filter: blur(2rem);
-                    }
-
-                    .ranking_list_item_content_image_play {
-                        opacity: 1;
-                        z-index: 9;
-                    }
-                }
-            }
-
-            .ranking_list_item_content_info {
-                flex: 1 1 0%;
-
-                .ranking_list_item_content_name {
-                    font-size: 16rem;
-                    font-weight: 500;
-                    margin-bottom: 4rem;
-                }
-
-                .ranking_list_item_content_artist {
-                    color: @font-color-light;
-                }
-            }
-
-            .ranking_list_item_content_operator {
-                display: flex;
-                gap: 6rem;
-                justify-content: space-between;
-                align-items: center;
-
-                .ranking_list_item_content_operator_icon {
-                    cursor: pointer;
-
-                    &:nth-child(1) {
-                        transform: translateX(20rem) scale(0);
-                        transition: 0.3s;
-                    }
-                }
-            }
-
-            &:hover {
-                background: @bg-main-highlight;
-
-                .ranking_list_item_content_operator .ranking_list_item_content_operator_icon:nth-child(1) {
-                    transform: translateX(0) scale(1);
-                }
-            }
-        }
+    &:not(:last-child) {
+      margin-bottom: 16rem;
     }
+
+    .ranking_list_item_content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: @bg-main;
+      border-radius: 4rem;
+      transition: 0.5s;
+      padding: 10rem 8rem;
+      gap: 8rem;
+
+      .ranking_list_item_content_index {
+        width: 20rem;
+        height: 20rem;
+        border-radius: 50%;
+        background: @bg-gray;
+        text-align: center;
+        line-height: 20rem;
+      }
+
+      .ranking_list_item_content_image {
+        width: 40rem;
+        height: 40rem;
+        border-radius: 4rem;
+        background: @bg-gray;
+        position: relative;
+        cursor: pointer;
+
+        .ranking_list_item_content_image_main {
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          position: absolute;
+          transition: filter 0.3s;
+        }
+
+        .ranking_list_item_content_image_play {
+          position: absolute;
+          opacity: 0;
+          font-size: 24rem;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          transition: opacity 0.3s;
+        }
+
+        &:hover {
+          .ranking_list_item_content_image_main {
+            filter: blur(2rem);
+          }
+
+          .ranking_list_item_content_image_play {
+            opacity: 1;
+            z-index: 9;
+          }
+        }
+      }
+
+      .ranking_list_item_content_info {
+        flex: 1 1 0%;
+
+        .ranking_list_item_content_name {
+          font-size: 16rem;
+          font-weight: 500;
+          margin-bottom: 4rem;
+        }
+
+        .ranking_list_item_content_artist {
+          color: @font-color-light;
+        }
+      }
+
+      .ranking_list_item_content_operator {
+        display: flex;
+        gap: 6rem;
+        justify-content: space-between;
+        align-items: center;
+
+        .ranking_list_item_content_operator_icon {
+          cursor: pointer;
+
+          //   &:nth-child(1) {
+          //     transform: translateX(20rem) scale(0);
+          //     transition: 0.3s;
+          //   }
+        }
+      }
+
+      &:hover {
+        background: @bg-main-highlight;
+
+        // .ranking_list_item_content_operator
+        //   .ranking_list_item_content_operator_icon:nth-child(1) {
+        //   transform: translateX(0) scale(1);
+        // }
+      }
+    }
+  }
 }
