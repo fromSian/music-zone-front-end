@@ -4,10 +4,21 @@
   position: relative;
   overflow: hidden;
 
+  :global {
+    .ant-empty,
+    .ant-spin-spinning {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
   .banner_direction_icon {
     cursor: pointer;
     position: absolute;
-    top: calc(50% - 12rem);
+    font-size: 28rem;
+    top: calc(50% - 14rem);
     z-index: 9;
   }
 
@@ -25,9 +36,44 @@
     height: 100%;
 
     .banner_item {
-      width: 100vw;
+      width: calc(100vw - 32rem);
       height: 100%;
       text-align: center;
+
+      .banner_item_image {
+        width: 100%;
+        height: calc(100% - 24rem);
+        background: black;
+        position: relative;
+        overflow: hidden;
+
+        .banner_item_image_main,
+        .banner_item_image_back {
+          position: absolute;
+        }
+        .banner_item_image_main {
+          max-width: 100%;
+          max-height: 90%;
+          z-index: 9;
+          box-shadow: 0 0 10rem rgba(255, 255, 255, 0.5);
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+        .banner_item_image_back {
+          width: 120%;
+          height: auto;
+          filter: blur(10rem);
+          top: 50%;
+          left: 50%;
+          transform: translate(-55%, -60%);
+        }
+      }
+
+      .banner_item_title {
+        margin-top: 8rem;
+      }
     }
   }
 
