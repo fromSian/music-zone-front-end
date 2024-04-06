@@ -17,7 +17,8 @@ const HeaderCustom = ({ routerConfig }: HeaderProps) => {
   const [menus, setMenus] = useState<MenuItemType[]>([]);
 
   useEffect(() => {
-    setActiveKeys([location.pathname]);
+    const reResult = /^\/([a-z,A-Z,0-9]+)/.exec(location.pathname);
+    setActiveKeys(reResult ? [reResult[0]] : []);
   }, [location]);
 
   useEffect(() => {
