@@ -87,7 +87,6 @@ const Banner = () => {
       const per = 100 / bannerData.length;
       setTranslateX(-per * end);
       setCurrentIndex(end);
-      console.log(end);
     },
     [bannerData]
   );
@@ -169,7 +168,6 @@ const Banner = () => {
                   styles.banner_right_icon
                 )}
                 onClick={() => {
-                  console.log(1);
                   if (currentIndex === bannerData.length - 2) {
                     setTimeout(() => {
                       setIsAnimate(false);
