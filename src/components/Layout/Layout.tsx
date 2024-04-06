@@ -13,12 +13,12 @@ interface HeaderProps {
 
 const HeaderCustom = ({ routerConfig }: HeaderProps) => {
   const location = useLocation();
-  const [activeKeys, setActiveKeys] = useState<string[]>([]);
+  const [activeKeys, setActiveKeys] = useState<string[]>(["/"]);
   const [menus, setMenus] = useState<MenuItemType[]>([]);
 
   useEffect(() => {
     const reResult = /^\/([a-z,A-Z,0-9]+)/.exec(location.pathname);
-    setActiveKeys(reResult ? [reResult[0]] : []);
+    setActiveKeys(reResult ? [reResult[0]] : ["/"]);
   }, [location]);
 
   useEffect(() => {
