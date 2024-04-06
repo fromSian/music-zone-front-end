@@ -11,6 +11,7 @@ import {
   PlusCircleOutlined,
   StepBackwardOutlined,
   StepForwardOutlined,
+  TrademarkCircleTwoTone,
   UnorderedListOutlined,
 } from "@ant-design/icons";
 import { ComponentProps } from "react";
@@ -122,3 +123,7 @@ export const DeleteIcon = (props: ComponentProps<typeof DeleteOutlined>) => (
 export const AddIcon = (props: ComponentProps<typeof PlusCircleOutlined>) => (
   <PlusCircleOutlined {...props} />
 );
+
+export const PlayRecordDefaultIcon = (
+  props: ComponentProps<typeof TrademarkCircleTwoTone>
+) => <TrademarkCircleTwoTone {...props} />;

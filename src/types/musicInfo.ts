@@ -80,12 +80,13 @@ export interface Song {
   audio: string;
   track: number;
   description: string;
+  image?: string;
 }
 
 /**
  * playlist List 查询结果对象
  */
-export interface PlaylistList {
+export interface PlaylistListItem {
   id: string;
   createTime: string;
   updateTime: string;
@@ -108,10 +109,11 @@ export interface PlayRecordList {
   id: string;
   createTime: string;
   updateTime: string;
-  type: string;
-  targetId: string;
+  type: PlayRecordType;
+  target_id: string;
   count: number;
   description: string;
+  detail: PlaylistListItem | AlbumListItem | ArtistDetial | Song | null;
 }
 
 /**
