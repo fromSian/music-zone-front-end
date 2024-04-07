@@ -8,16 +8,19 @@ import classnames from "classnames";
 import { map } from "lodash";
 import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
 import styles from "./index.module.less";
 
 const BannerItem = ({
   item,
   onMouseOver,
   onMouseLeave,
+  onClick,
 }: {
   item: AlbumListItem;
   onMouseOver: (e: MouseEvent) => void;
   onMouseLeave: (e: MouseEvent) => void;
+  onClick: (e: MouseEvent) => void;
 }) => {
   return (
     <>
@@ -25,10 +28,19 @@ const BannerItem = ({
         className={styles.banner_item}
         onMouseOver={onMouseOver}
         onMouseLeave={onMouseLeave}
+        onClick={onClick}
       >
         <div className={styles.banner_item_image}>
-          <img src={item.image} className={styles.banner_item_image_main} />
-          <img src={item.image} className={styles.banner_item_image_back} />
+          <img
+            src={item.image}
+            className={styles.banner_item_image_main}
+            title={item.name}
+          />
+          <img
+            src={item.image}
+            className={styles.banner_item_image_back}
+            title={item.name}
+          />
         </div>
 
         <p className={styles.banner_item_title}>
@@ -47,6 +59,7 @@ const page = 1;
 const size = 5;
 
 const Banner = () => {
+  const navigate = useNavigate();
   const [bannerData, setBannerData] = useState<AlbumListItem[]>([]);
 
   const [currentIndex, setCurrentIndex] = useState(-1);
@@ -129,6 +142,10 @@ const Banner = () => {
     }, interval);
   }, [next]);
 
+  const handleGoTo = useCallback((id: string) => {
+    window.open(`/library/album/${id}`);
+  }, []);
+
   return (
     <div className={styles.banner}>
       {isLoading || isFetching ? (
@@ -191,6 +208,7 @@ const Banner = () => {
                   <BannerItem
                     onMouseOver={onMouseOver}
                     onMouseLeave={onMouseLeave}
+                    onClick={() => handleGoTo(item.id)}
                     key={`banner_item${index}`}
                     item={item}
                   />
