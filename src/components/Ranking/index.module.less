@@ -3,6 +3,9 @@
   flex-wrap: wrap;
   overflow-x: hidden;
   width: 100%;
+  height: 100%;
+  overflow-y: hidden;
+  align-content: flex-start;
 }
 
 .list_select {
@@ -80,6 +83,10 @@
   .list_select {
     display: block;
   }
+  .ranking_list {
+    height: 100%;
+    overflow-y: auto;
+  }
 }
 
 @media screen and (max-width: 430px) {
@@ -89,6 +96,11 @@
 
   .list_select {
     display: none;
+  }
+
+  .ranking_list {
+    height: calc(100% - 32px - 16rem);
+    overflow-y: auto;
   }
 }
 
