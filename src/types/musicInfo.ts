@@ -102,19 +102,42 @@ export interface PlaylistEditSong {
   song: string;
 }
 
+type PlayRecordAlbum = {
+  type: "ALBUM";
+  detail: AlbumListItem;
+};
+type PlayRecordArtist = {
+  type: "ARTIST";
+  detail: ArtistListItem;
+};
+
+type PlayRecordSong = {
+  type: "SONG";
+  detail: Song;
+};
+
+type PlayRecordPlayList = {
+  type: "PLAYLIST";
+  detail: PlaylistListItem;
+};
+
 /**
  * play record List 查询结果
  */
-export interface PlayRecordList {
+export type PlayRecordList = {
   id: string;
   createTime: string;
   updateTime: string;
-  type: PlayRecordType;
   target_id: string;
   count: number;
   description: string;
-  detail: PlaylistListItem | AlbumListItem | ArtistDetial | Song | null;
-}
+} & (
+  | PlayRecordAlbum
+  | PlayRecordArtist
+  | PlayRecordSong
+  | PlayRecordPlayList
+  | null
+);
 
 /**
  * play record type
