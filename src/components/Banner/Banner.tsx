@@ -8,7 +8,6 @@ import classnames from "classnames";
 import { map } from "lodash";
 import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
 import styles from "./index.module.less";
 
 const BannerItem = ({
@@ -59,7 +58,6 @@ const page = 1;
 const size = 5;
 
 const Banner = () => {
-  const navigate = useNavigate();
   const [bannerData, setBannerData] = useState<AlbumListItem[]>([]);
 
   const [currentIndex, setCurrentIndex] = useState(-1);

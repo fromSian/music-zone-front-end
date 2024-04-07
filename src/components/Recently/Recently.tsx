@@ -5,12 +5,10 @@ import { Empty, Spin } from "antd";
 import { AxiosResponse } from "axios";
 import { useCallback } from "react";
 import { useQuery } from "react-query";
-import { useNavigate } from "react-router";
 import { PlayRecordDefaultIcon } from "../Icons/Icons";
 import styles from "./Recently.module.less";
 
 const Recently = () => {
-  const navigate = useNavigate();
   const { isLoading, isFetching, isSuccess, data } = useQuery({
     queryKey: ["recently"],
     queryFn: async () => {
@@ -27,7 +25,7 @@ const Recently = () => {
   });
 
   const handleGoTo = useCallback((type: PlayRecordType, id: string) => {
-    navigate(`/library/${type.toLocaleLowerCase()}/${id}`);
+    window.open(`/library/${type.toLocaleLowerCase()}/${id}`);
   }, []);
 
   return (
