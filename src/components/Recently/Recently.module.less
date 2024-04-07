@@ -1,3 +1,21 @@
+@media screen and (min-width: 1024px) {
+  .recently_content_item {
+    width: calc((100% - 48rem) / 4);
+  }
+}
+
+@media screen and (min-width: 431px) and (max-width: 1023px) {
+  .recently_content_item {
+    width: calc((100% - 32rem) / 3);
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .recently_content_item {
+    width: calc(50% - 8rem);
+  }
+}
+
 .recently {
   height: calc(100% - 40vh - 16rem);
   margin-top: 16rem;
@@ -19,7 +37,6 @@
       border-radius: 4rem;
       background: @bg-dark;
       padding: 8rem 10rem;
-      width: calc((100% - 48rem) / 4);
       align-items: center;
       height: max-content;
       cursor: pointer;
