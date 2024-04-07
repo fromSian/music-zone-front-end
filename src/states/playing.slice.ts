@@ -1,14 +1,14 @@
-import { SongType } from "@/types/musicInfo";
+import { Song } from "@/types/musicInfo";
 import { PlayingSortType } from "@/types/playInfo";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { shuffle } from "lodash";
 import audio1 from "../asset/audios/sample1.m4a";
 import audio2 from "../asset/audios/sample2.m4a";
 
 interface InitialStateProps {
-  listInAddOrder: SongType[];
-  listInPlayOrder: SongType[];
-  playingSong: SongType | null;
+  listInAddOrder: Song[];
+  listInPlayOrder: Song[];
+  playingSong: Song | null;
   panelVisible: boolean;
   isPlaying: boolean;
   playingSortType: PlayingSortType;
@@ -97,12 +97,12 @@ export const playingListSlice = createSlice({
   name: "playingList",
   initialState: initialState,
   reducers: {
-    changeAddList: (state, action: PayloadAction<SongType[]>) => {
+    changeAddList: (state, action: PayloadAction<Song[]>) => {
       state.listInAddOrder = action.payload;
     },
     addOne: (
       state,
-      action: PayloadAction<{ song: SongType; isPlayNow?: boolean }>
+      action: PayloadAction<{ song: Song; isPlayNow?: boolean }>
     ) => {
       let { song, isPlayNow } = action.payload;
       state.listInAddOrder = [...state.listInAddOrder, song];
@@ -132,10 +132,10 @@ export const playingListSlice = createSlice({
     shufflePlayingList: (state) => {
       state.listInPlayOrder = shuffle(state.listInAddOrder);
     },
-    changePlayingListOrder: (state, action: PayloadAction<SongType[]>) => {
+    changePlayingListOrder: (state, action: PayloadAction<Song[]>) => {
       state.listInPlayOrder = action.payload;
     },
-    changePlayingSong: (state, action: PayloadAction<SongType>) => {
+    changePlayingSong: (state, action: PayloadAction<Song>) => {
       state.playingSong = action.payload;
     },
     playNext: (state) => {
@@ -166,7 +166,7 @@ export const playingListSlice = createSlice({
     },
     playOneAlbum: (
       state,
-      action: PayloadAction<{ songs: SongType[]; isShuffle?: boolean }>
+      action: PayloadAction<{ songs: Song[]; isShuffle?: boolean }>
     ) => {
       let { songs, isShuffle } = action.payload;
       if (!songs) {

@@ -1,41 +1,29 @@
+import { AlbumListItem, ListResult } from "@/types/musicInfo";
+import { getErrorMessage } from "@/utils/error";
+import request from "@/utils/request";
 import { Divider, Spin, Tag } from "antd";
+import { AxiosResponse } from "axios";
 import classnames from "classnames";
-import { map } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useNavigate, useParams } from "react-router-dom";
 import styles from "./MusicLibrary.module.less";
-
-interface DataType {
-  gender: string;
-  name: {
-    title: string;
-    first: string;
-    last: string;
-  };
-  email: string;
-  picture: {
-    large: string;
-    medium: string;
-    thumbnail: string;
-  };
-  nat: string;
-}
 
 const tagOptions = [
   {
     label: "专辑",
-    key: "album",
+    key: "albums",
     disabled: false,
   },
   {
     label: "歌单",
-    key: "playlist",
-    disabled: true,
+    key: "playlists",
+    disabled: false,
   },
   {
     label: "艺人",
-    key: "artist",
-    disabled: true,
+    key: "artists",
+    disabled: false,
   },
 ];
 
@@ -51,87 +39,85 @@ const modeOptions = [
     disabled: true,
   },
 ];
-
+const types = ["albums", "playlists", "artists"];
+const size = 16;
 const MusicLibrary = () => {
+  const { type } = useParams();
+  const navigate = useNavigate();
+
   const contentDivRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<DataType[]>([]);
-
-  const [selectedTags, setSelectedTags] = useState<string[]>(
-    map(
-      tagOptions.filter((item) => !item.disabled),
-      "key"
-    )
-  );
+  const [data, setData] = useState<any[]>([]);
   const [activeMode, setActiveMode] = useState<string>("card");
 
-  const loadMoreData = () => {
-    if (loading) {
-      return;
-    }
-    setLoading(true);
-    fetch(
-      "https://randomuser.me/api/?results=10&inc=name,gender,email,nat,picture&noinfo"
-    )
-      .then((res) => res.json())
-      .then((body) => {
-        setData([...data, ...body.results]);
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  };
+  const [cur, setCur] = useState(1);
+  const [total, setTotal] = useState<number | undefined>(undefined);
 
-  useEffect(() => {
-    loadMoreData();
-  }, []);
+  const controllerRef = useRef<AbortController>();
 
-  const handleTagChange = useCallback(
-    (tag: (typeof tagOptions)[0], checked: boolean) => {
-      if (tag.disabled) {
+  const loadMoreData = useCallback(
+    async (type: string, page: number, size: number) => {
+      if (loading) {
         return;
       }
-      if (checked) {
-        setSelectedTags((v) => [...v, tag.key]);
-      } else {
-        setSelectedTags((v) => v.filter((item) => item !== tag.key));
+      try {
+        setLoading(true);
+        if (controllerRef.current) {
+          controllerRef.current.abort();
+          controllerRef.current = undefined;
+        }
+
+        controllerRef.current = new AbortController();
+        const result: AxiosResponse<ListResult<AlbumListItem>> =
+          await request.get(`/${type}/?page=${page}&size=${size}`, {
+            signal: controllerRef.current.signal,
+          });
+        if (result && result.data) {
+          setData((data) => [...data, ...result.data.results]);
+          setLoading(false);
+          setCur((v) => v + 1);
+          setTotal(result.data.count);
+        }
+      } catch (err) {
+        setLoading(false);
+        getErrorMessage(err);
       }
     },
     []
   );
 
+  useEffect(() => {
+    if (!type || !types.includes(type)) {
+      navigate(`/library/albums`);
+      return;
+    }
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+      controllerRef.current = undefined;
+    }
+    setData([]);
+    setCur(1);
+    setTotal(undefined);
+    loadMoreData(type, 1, size);
+
+    return () => {
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+        controllerRef.current = undefined;
+      }
+    };
+  }, [type]);
+
   return (
     <div className={styles.music_library}>
       <div className={styles.music_library_header}>
         <div className={styles.music_library_header_tags}>
-          <Tag.CheckableTag
-            key={"all"}
-            checked={
-              selectedTags.length ===
-              tagOptions.filter((item) => !item.disabled).length
-            }
-            onChange={(checked) => {
-              if (checked) {
-                setSelectedTags(
-                  map(
-                    tagOptions.filter((item) => !item.disabled),
-                    "key"
-                  )
-                );
-              } else {
-                setSelectedTags([]);
-              }
-            }}
-          >
-            全选
-          </Tag.CheckableTag>
           {tagOptions.map((tag) => (
             <Tag.CheckableTag
               className={tag.disabled ? styles.tag_disabled : ""}
               key={tag.key}
-              checked={selectedTags.includes(tag.key)}
-              onChange={(checked) => handleTagChange(tag, checked)}
+              checked={type === tag.key}
+              onChange={(checked) => navigate(`/library/${tag.key}`)}
             >
               {tag.label}
             </Tag.CheckableTag>
@@ -172,8 +158,8 @@ const MusicLibrary = () => {
       >
         <InfiniteScroll
           dataLength={data.length}
-          next={loadMoreData}
-          hasMore={data.length < 50}
+          next={() => loadMoreData(type || "ablums", cur, size)}
+          hasMore={!total || data.length < total}
           loader={
             <Divider>
               <Spin />
@@ -190,7 +176,7 @@ const MusicLibrary = () => {
               >
                 <div className={styles.music_library_content_list_item_image}>
                   <img
-                    src={item.picture.large}
+                    src={item.image}
                     className={
                       styles.music_library_content_list_item_image_main
                     }
@@ -198,7 +184,7 @@ const MusicLibrary = () => {
                 </div>
 
                 <p className={styles.music_library_content_list_item_name}>
-                  {item.name.last}
+                  {item.name}
                 </p>
               </div>
             ))}
