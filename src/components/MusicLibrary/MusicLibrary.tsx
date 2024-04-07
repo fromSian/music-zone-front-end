@@ -50,7 +50,6 @@ const MusicLibrary = () => {
   const { type } = useParams();
   const navigate = useNavigate();
 
-  const contentDivRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<
     (PlaylistListItem | AlbumListItem | ArtistListItem)[]
@@ -165,11 +164,7 @@ const MusicLibrary = () => {
           ))}
         </div>
       </div>
-      <div
-        className={styles.music_library_content}
-        ref={contentDivRef}
-        id="scrollContent"
-      >
+      <div className={styles.music_library_content} id="scrollContent">
         <InfiniteScroll
           dataLength={data.length}
           next={() => loadMoreData(type || "ablums", cur, size)}

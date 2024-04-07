@@ -53,7 +53,7 @@ const routerConfig = [
         name: "歌单",
         path: "/library/playlists/:id",
         isMenu: false,
-        element: lazyLoad("AlbumInfo"),
+        element: lazyLoad("PlaylistInfo"),
       },
       {
         name: "artist",

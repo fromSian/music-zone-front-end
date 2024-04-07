@@ -21,7 +21,6 @@ import {
 import styles from "./Album.module.less";
 const Album = () => {
   const { id, song_id } = useParams();
-  console.log(id);
   const dispatch = useAppDispatch();
   const headerRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,7 +34,6 @@ const Album = () => {
     queryFn: async ({ queryKey }) => {
       try {
         const [_key, id] = queryKey;
-        console.log(id);
         const result: AxiosResponse<AlbumDetail> = await request.get(
           `/albums/${id}/`
         );
@@ -87,7 +85,14 @@ const Album = () => {
           <div className={styles.album_header} ref={headerRef}>
             <div className={styles.album_image}>
               <img
-                src={new URL(album.image, import.meta.url).href}
+                src={
+                  album.image
+                    ? album.image
+                    : new URL(
+                        "@/asset/images/default/album.JPG",
+                        import.meta.url
+                      ).href
+                }
                 className={styles.album_image_main}
               />
             </div>
@@ -125,7 +130,7 @@ const Album = () => {
           <div className={styles.album_songs}>
             {album.songs && album.songs.length ? (
               <>
-                {album.songs.map((song, index) => (
+                {album.songs.map((song) => (
                   <li
                     className={classnames(styles.album_songs_item, {
                       [styles.album_songs_item_active]: song_id === song.id,
