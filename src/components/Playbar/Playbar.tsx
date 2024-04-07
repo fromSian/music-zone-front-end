@@ -9,12 +9,15 @@ import {
   shufflePlayingList,
 } from "@/states/playing.slice";
 import { PlayingSortType } from "@/types/playInfo";
+import { addPlayRecord } from "@/utils/api";
+import { joinList2Str } from "@/utils/text";
 import { formatTime } from "@/utils/time";
 import { Spin, Tooltip } from "antd";
 import classnames from "classnames";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import { BsFillMusicPlayerFill } from "react-icons/bs";
 import {
+  HeartFullIcon,
   HeartLineIcon,
   PauseIcon,
   PlayIcon,
@@ -131,12 +134,18 @@ const Playbar = () => {
     };
     audioRef.current.addEventListener("ended", ended);
 
+    const play = () => {
+      addPlayRecord("SONGS", song.id);
+    };
+    audioRef.current.addEventListener("play", play);
+
     return () => {
       audioRef.current?.removeEventListener("canplay", ready);
       audioRef.current?.removeEventListener("timeupdate", update);
       audioRef.current?.removeEventListener("seeking", seeking);
       audioRef.current?.removeEventListener("seeked", seeked);
       audioRef.current?.removeEventListener("ended", ended);
+      audioRef.current?.removeEventListener("play", play);
     };
   }, [song]);
 
@@ -191,18 +200,24 @@ const Playbar = () => {
                 </p>
               </div>
             </Tooltip>
-            <Tooltip title={song.album}>
-              <p className={styles.playbar_info_album}>{song.album}</p>
+            <Tooltip title={song.album.name}>
+              <p className={styles.playbar_info_album}>{song.album.name}</p>
             </Tooltip>
-            <Tooltip title={song.artist}>
-              <p className={styles.playbar_info_artist}>{song.artist}</p>
+            <Tooltip title={joinList2Str(song.artist, "name")}>
+              <p className={styles.playbar_info_artist}>
+                {joinList2Str(song.artist, "name")}
+              </p>
             </Tooltip>
           </div>
         )}
 
         <div className={styles.play_control}>
           <div className={styles.play_control_switch}>
-            <HeartLineIcon className={styles.play_control_switch_icon} />
+            {song?.isLiked ? (
+              <HeartFullIcon className={styles.play_control_switch_icon} />
+            ) : (
+              <HeartLineIcon className={styles.play_control_switch_icon} />
+            )}
             <PlayPrevIcon
               className={styles.play_control_switch_icon}
               onClick={() => dispatch(playPrev())}
@@ -269,6 +284,7 @@ const Playbar = () => {
                     (event.nativeEvent.offsetX /
                       timeDivRef.current.clientWidth) *
                     duration;
+                  console.log(audioRef.current.currentTime);
                 }
               }}
             >

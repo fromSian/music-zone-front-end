@@ -1,6 +1,7 @@
 import { useAppDispatch } from "@/states/hooks";
 import { addOne, playOneAlbum } from "@/states/playing.slice";
 import { AlbumDetail, Song } from "@/types/musicInfo";
+import { addPlayRecord, loveOrNotASong } from "@/utils/api";
 import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { joinList2Str } from "@/utils/text";
@@ -9,10 +10,11 @@ import { Button, Empty, Spin, Tooltip } from "antd";
 import { AxiosResponse } from "axios";
 import classnames from "classnames";
 import { useCallback, useRef } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import {
   AddIcon,
+  HeartFullIcon,
   HeartLineIcon,
   PlayIcon,
   PlayModeOrderIcon,
@@ -23,7 +25,7 @@ const Album = () => {
   const { id, song_id } = useParams();
   const dispatch = useAppDispatch();
   const headerRef = useRef<HTMLDivElement | null>(null);
-
+  const queryClient = useQueryClient();
   const {
     isLoading,
     isFetching,
@@ -53,6 +55,7 @@ const Album = () => {
       return;
     }
     dispatch(playOneAlbum({ songs: album.songs }));
+    addPlayRecord("ALBUMS", album.id);
   }, [album]);
 
   /**
@@ -63,6 +66,7 @@ const Album = () => {
       return;
     }
     dispatch(playOneAlbum({ songs: album.songs, isShuffle: true }));
+    addPlayRecord("ALBUMS", album.id);
   }, [album]);
 
   /**
@@ -158,11 +162,55 @@ const Album = () => {
                           />
                         </Tooltip>
                         <Tooltip title={"喜欢"}>
-                          <HeartLineIcon
-                            className={
-                              styles.album_songs_item_content_operator_icon
-                            }
-                          />
+                          {song?.isLiked ? (
+                            <HeartFullIcon
+                              onClick={async () => {
+                                try {
+                                  const res = await loveOrNotASong(
+                                    song.id,
+                                    false
+                                  );
+                                  if (res) {
+                                    queryClient.invalidateQueries([
+                                      "album",
+                                      id,
+                                    ]);
+                                  } else {
+                                    throw new Error("操作失败");
+                                  }
+                                } catch (err) {
+                                  getErrorMessage(err);
+                                }
+                              }}
+                              className={
+                                styles.album_songs_item_content_operator_icon
+                              }
+                            />
+                          ) : (
+                            <HeartLineIcon
+                              onClick={async () => {
+                                try {
+                                  const res = await loveOrNotASong(
+                                    song.id,
+                                    true
+                                  );
+                                  if (res) {
+                                    queryClient.invalidateQueries([
+                                      "album",
+                                      id,
+                                    ]);
+                                  } else {
+                                    throw new Error("操作失败");
+                                  }
+                                } catch (err) {
+                                  getErrorMessage(err);
+                                }
+                              }}
+                              className={
+                                styles.album_songs_item_content_operator_icon
+                              }
+                            />
+                          )}
                         </Tooltip>
                         <Tooltip title={"播放"}>
                           <PlayIcon

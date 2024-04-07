@@ -81,6 +81,7 @@ export interface Song {
   track: number;
   description: string;
   duration: number;
+  isLiked: boolean;
   image?: string;
 }
 
@@ -143,7 +144,7 @@ export type PlayRecordList = {
 /**
  * play record type
  */
-export type PlayRecordType = "PLAYLIST" | "ALBUM" | "SONG" | "ARTIST";
+export type PlayRecordType = "PLAYLISTS" | "ALBUMS" | "SONGS" | "ARTISTS";
 
 /**
  * play record add one record 传参

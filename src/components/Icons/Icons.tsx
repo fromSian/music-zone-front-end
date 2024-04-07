@@ -30,7 +30,7 @@ export const HeartLineIcon = (props: ComponentProps<typeof HeartOutlined>) => (
  * 实心爱心
  */
 export const HeartFullIcon = (props: ComponentProps<typeof HeartTwoTone>) => (
-  <HeartTwoTone {...props} />
+  <HeartTwoTone twoToneColor="#eb2f96" {...props} />
 );
 
 /**

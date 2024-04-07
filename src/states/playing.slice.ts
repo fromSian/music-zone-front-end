@@ -1,10 +1,8 @@
 import { Song } from "@/types/musicInfo";
 import { PlayingSortType } from "@/types/playInfo";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { loveOrNotASong } from "@/utils/api";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { shuffle } from "lodash";
-import audio1 from "../asset/audios/sample1.m4a";
-import audio2 from "../asset/audios/sample2.m4a";
-
 interface InitialStateProps {
   listInAddOrder: Song[];
   listInPlayOrder: Song[];
@@ -16,75 +14,11 @@ interface InitialStateProps {
 
 const initialState: InitialStateProps = {
   // 添加顺序的播放列表
-  listInAddOrder: [
-    {
-      name: "你在烦恼什么",
-      album: "你在烦恼什么",
-      artist: "苏打绿",
-      audio: audio1,
-      id: 5,
-    },
-    {
-      name: "起来",
-      album: "小宇宙",
-      artist: "苏打绿",
-      audio: audio2,
-      id: 1,
-    },
-    {
-      name: "起来2",
-      album: "小宇宙",
-      artist: "苏打绿",
-      audio: audio2,
-      id: 2,
-    },
-    {
-      name: "起来3",
-      album: "小宇宙",
-      artist: "苏打绿",
-      audio: audio2,
-      id: 3,
-    },
-  ],
+  listInAddOrder: [],
   // 播放顺序的列表
-  listInPlayOrder: [
-    {
-      name: "你在烦恼什么",
-      album: "你在烦恼什么",
-      artist: "苏打绿",
-      audio: audio1,
-      id: 5,
-    },
-    {
-      name: "起来",
-      album: "小宇宙",
-      artist: "苏打绿",
-      audio: audio2,
-      id: 1,
-    },
-    {
-      name: "起来2",
-      album: "小宇宙",
-      artist: "苏打绿",
-      audio: audio2,
-      id: 2,
-    },
-    {
-      name: "起来3",
-      album: "小宇宙",
-      artist: "苏打绿",
-      audio: audio2,
-      id: 3,
-    },
-  ],
+  listInPlayOrder: [],
   // 当前播放曲目索引
-  playingSong: {
-    name: "你在烦恼什么",
-    album: "你在烦恼什么",
-    artist: "苏打绿",
-    audio: audio1,
-    id: 5,
-  },
+  playingSong: null,
   // 播放列表面板是否可见
   panelVisible: false,
   // 是否播放中
@@ -92,6 +26,20 @@ const initialState: InitialStateProps = {
   // 播放模式
   playingSortType: PlayingSortType.InOrder,
 };
+
+export const addRecord = createAsyncThunk("users/addRecord", async () => {
+  return 1;
+});
+
+export const likeASong = createAsyncThunk(
+  "users/likeASong",
+  async (id: string) => {
+    const res = await loveOrNotASong(id);
+    if (res) {
+      return id;
+    }
+  }
+);
 
 export const playingListSlice = createSlice({
   name: "playingList",
@@ -186,6 +134,26 @@ export const playingListSlice = createSlice({
     changePlayingSortType: (state, action: PayloadAction<number>) => {
       state.playingSortType = action.payload;
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(likeASong.fulfilled, (state, action) => {
+      const id = action.payload;
+      if (id) {
+        state.listInAddOrder.forEach((item) => {
+          if (item.id === id) {
+            item.isLiked = true;
+          }
+        });
+        state.listInPlayOrder.forEach((item) => {
+          if (item.id === id) {
+            item.isLiked = true;
+          }
+        });
+        if (state.playingSong?.id === id) {
+          state.playingSong.isLiked = true;
+        }
+      }
+    });
   },
 });
 

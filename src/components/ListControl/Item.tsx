@@ -4,7 +4,8 @@ import {
   removeOne,
   setPlaying,
 } from "@/states/playing.slice";
-import { SongType } from "@/types/musicInfo";
+import { Song } from "@/types/musicInfo";
+import { joinList2Str } from "@/utils/text";
 import { Popconfirm, Tooltip } from "antd";
 import classnames from "classnames";
 import { useCallback, useState } from "react";
@@ -17,7 +18,7 @@ import {
 } from "../Icons/Icons";
 import PlayingIcon from "../PlayingIcon/PlayingIcon";
 import styles from "./Item.module.less";
-const Item = ({ item }: { item: SongType }) => {
+const Item = ({ item }: { item: Song }) => {
   const { playingSong, isPlaying } = useAppSelector((state) => state.playing);
   const dispatch = useAppDispatch();
   const handleDelete = useCallback(() => {
@@ -28,7 +29,7 @@ const Item = ({ item }: { item: SongType }) => {
   return (
     <div
       className={classnames(styles.play, {
-        [styles.playing]: playingSong.id === item.id,
+        [styles.playing]: playingSong && playingSong.id === item.id,
       })}
     >
       {/* 是否播放中 & 立即播放 */}
@@ -37,13 +38,13 @@ const Item = ({ item }: { item: SongType }) => {
           isAnimate={true}
           className={classnames(styles.play_status_icon, {
             [styles.play_status_playing_animate]:
-              playingSong.id === item.id && isPlaying,
+              playingSong && playingSong.id === item.id && isPlaying,
           })}
         />
         <PlayingIcon
           className={classnames(styles.play_status_icon, {
             [styles.play_status_playing_noanimate]:
-              playingSong.id === item.id && !isPlaying,
+              playingSong && playingSong.id === item.id && !isPlaying,
           })}
         />
 
@@ -51,11 +52,12 @@ const Item = ({ item }: { item: SongType }) => {
           className={classnames(
             styles.play_status_icon,
             {
-              [styles.play_status_play]: playingSong.id !== item.id,
+              [styles.play_status_play]:
+                !playingSong || playingSong.id !== item.id,
             },
             {
               [styles.play_status_play_hover]:
-                playingSong.id === item.id && !isPlaying,
+                playingSong && playingSong.id === item.id && !isPlaying,
             }
           )}
           onClick={() => {
@@ -66,7 +68,8 @@ const Item = ({ item }: { item: SongType }) => {
 
         <PauseIcon
           className={classnames(styles.play_status_icon, {
-            [styles.play_status_pause]: playingSong.id === item.id && isPlaying,
+            [styles.play_status_pause]:
+              playingSong && playingSong.id === item.id && isPlaying,
           })}
           onClick={() => {
             dispatch(setPlaying(false));
@@ -77,8 +80,10 @@ const Item = ({ item }: { item: SongType }) => {
         <Tooltip title={item.name}>
           <p className={styles.play_info_name}>{item.name}</p>
         </Tooltip>
-        <Tooltip title={item.artist}>
-          <p className={styles.play_info_artist}>{item.artist}</p>
+        <Tooltip title={joinList2Str(item.artist, "name")}>
+          <p className={styles.play_info_artist}>
+            {joinList2Str(item.artist, "name")}
+          </p>
         </Tooltip>
       </div>
 
