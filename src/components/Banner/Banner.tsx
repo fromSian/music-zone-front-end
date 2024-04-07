@@ -141,7 +141,7 @@ const Banner = () => {
   }, [next]);
 
   const handleGoTo = useCallback((id: string) => {
-    window.open(`/library/album/${id}`);
+    window.open(`/library/albums/${id}`);
   }, []);
 
   return (

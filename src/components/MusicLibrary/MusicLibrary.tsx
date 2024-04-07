@@ -1,4 +1,9 @@
-import { AlbumListItem, ListResult } from "@/types/musicInfo";
+import {
+  AlbumListItem,
+  ArtistListItem,
+  ListResult,
+  PlaylistListItem,
+} from "@/types/musicInfo";
 import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { Divider, Spin, Tag } from "antd";
@@ -47,7 +52,9 @@ const MusicLibrary = () => {
 
   const contentDivRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<
+    (PlaylistListItem | AlbumListItem | ArtistListItem)[]
+  >([]);
   const [activeMode, setActiveMode] = useState<string>("card");
 
   const [cur, setCur] = useState(1);
@@ -88,7 +95,7 @@ const MusicLibrary = () => {
 
   useEffect(() => {
     if (!type || !types.includes(type)) {
-      navigate(`/library/albums`);
+      navigate(`/library/albums/`);
       return;
     }
     if (controllerRef.current) {
@@ -108,6 +115,13 @@ const MusicLibrary = () => {
     };
   }, [type]);
 
+  const handleGoDetail = useCallback(
+    (item: ArtistListItem | AlbumListItem | PlaylistListItem) => {
+      window.open(`/library/${type}/${item.id}`);
+    },
+    [type]
+  );
+
   return (
     <div className={styles.music_library}>
       <div className={styles.music_library_header}>
@@ -117,7 +131,7 @@ const MusicLibrary = () => {
               className={tag.disabled ? styles.tag_disabled : ""}
               key={tag.key}
               checked={type === tag.key}
-              onChange={(checked) => navigate(`/library/${tag.key}`)}
+              onChange={() => navigate(`/library/${tag.key}`)}
             >
               {tag.label}
             </Tag.CheckableTag>
@@ -173,6 +187,7 @@ const MusicLibrary = () => {
               <div
                 className={styles.music_library_content_list_item}
                 key={`music_library_item${index}`}
+                onClick={() => handleGoDetail(item)}
               >
                 <div className={styles.music_library_content_list_item_image}>
                   <img

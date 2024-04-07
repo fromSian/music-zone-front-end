@@ -34,23 +34,16 @@ const routerConfig = [
     name: "音乐库",
     path: "/library",
     isMenu: true,
-    element: lazyLoad("Library"),
     children: [
       {
-        name: "音乐库",
-        path: "/library/:type",
-        isMenu: true,
-        element: lazyLoad("Library"),
-      },
-      {
         name: "专辑信息",
-        path: "/library/album/:id/",
+        path: "/library/albums/:id",
         isMenu: false,
         element: lazyLoad("AlbumInfo"),
         children: [
           {
             name: "专辑信息",
-            path: "/library/album/:id/:song_id",
+            path: "/library/albums/:id/:song_id",
             isMenu: false,
             element: lazyLoad("AlbumInfo"),
           },
@@ -58,15 +51,27 @@ const routerConfig = [
       },
       {
         name: "歌单",
-        path: "/library/playlist/:id",
+        path: "/library/playlists/:id",
         isMenu: false,
         element: lazyLoad("AlbumInfo"),
       },
       {
         name: "artist",
-        path: "/library/artist/:id",
+        path: "/library/artists/:id",
         isMenu: false,
         element: lazyLoad("AlbumInfo"),
+      },
+      {
+        name: "音乐库",
+        path: "/library/:type",
+        isMenu: true,
+        element: lazyLoad("Library"),
+      },
+      {
+        name: "音乐库",
+        path: "/library",
+        isMenu: true,
+        element: lazyLoad("Library"),
       },
     ],
   },
