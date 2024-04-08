@@ -1,0 +1,38 @@
+.play_status {
+  font-size: 20rem;
+  position: relative;
+  width: 20rem;
+  height: 20rem;
+
+  .play_status_icon {
+    visibility: hidden;
+    position: absolute;
+    transition: color 0.3s;
+
+    &:active {
+      color: fade(@font-color-light, 40);
+    }
+  }
+
+  .play_status_playing_animate,
+  .play_status_playing_noanimate,
+  .play_status_play {
+    visibility: visible;
+  }
+
+  .play_status_play_hover {
+    visibility: hidden;
+  }
+
+  &:hover {
+    .play_status_playing_animate,
+    .play_status_playing_noanimate {
+      visibility: hidden;
+    }
+
+    .play_status_pause,
+    .play_status_play_hover {
+      visibility: visible;
+    }
+  }
+}

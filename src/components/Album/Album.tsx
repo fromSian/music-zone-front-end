@@ -1,5 +1,10 @@
-import { useAppDispatch } from "@/states/hooks";
-import { addOne, playOneAlbum } from "@/states/playing.slice";
+import { useAppDispatch, useAppSelector } from "@/states/hooks";
+import {
+  addOne,
+  changePlayingSong,
+  playOneAlbum,
+  setPlaying,
+} from "@/states/playing.slice";
 import { AlbumDetail, Song } from "@/types/musicInfo";
 import { addPlayRecord, loveOrNotASong } from "@/utils/api";
 import { getErrorMessage } from "@/utils/error";
@@ -16,13 +21,15 @@ import {
   AddIcon,
   HeartFullIcon,
   HeartLineIcon,
-  PlayIcon,
   PlayModeOrderIcon,
   PlayModeShuffleIcon,
 } from "../Icons/Icons";
+import PlayStatus from "../PlayStatus/PlayStatus";
 import styles from "./Album.module.less";
+
 const Album = () => {
   const { id, song_id } = useParams();
+  const { playingSong, isPlaying } = useAppSelector((state) => state.playing);
   const dispatch = useAppDispatch();
   const headerRef = useRef<HTMLDivElement | null>(null);
   const queryClient = useQueryClient();
@@ -148,6 +155,18 @@ const Album = () => {
                       <p className={styles.album_songs_item_content_index}>
                         {song.track}
                       </p>
+                      <PlayStatus
+                        playingSong={playingSong}
+                        isPlaying={isPlaying}
+                        item={song}
+                        handlePlay={() => {
+                          dispatch(changePlayingSong(song));
+                          dispatch(setPlaying(true));
+                        }}
+                        handlePause={() => {
+                          dispatch(setPlaying(false));
+                        }}
+                      />
                       <div className={styles.album_songs_item_content_info}>
                         <p className={styles.album_songs_item_content_name}>
                           {song.name}
@@ -235,14 +254,14 @@ const Album = () => {
                             />
                           )}
                         </Tooltip>
-                        <Tooltip title={"播放"}>
+                        {/* <Tooltip title={"播放"}>
                           <PlayIcon
                             onClick={() => handlePlayOneSong(song)}
                             className={
                               styles.album_songs_item_content_operator_icon
                             }
                           />
-                        </Tooltip>
+                        </Tooltip> */}
                       </div>
                     </div>
                   </li>

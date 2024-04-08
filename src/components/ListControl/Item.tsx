@@ -9,14 +9,8 @@ import { joinList2Str } from "@/utils/text";
 import { Popconfirm, Tooltip } from "antd";
 import classnames from "classnames";
 import { useCallback, useState } from "react";
-import {
-  DeleteIcon,
-  HeartFullIcon,
-  HeartLineIcon,
-  PauseIcon,
-  PlayIcon,
-} from "../Icons/Icons";
-import PlayingIcon from "../PlayingIcon/PlayingIcon";
+import { DeleteIcon, HeartFullIcon, HeartLineIcon } from "../Icons/Icons";
+import PlayStatus from "../PlayStatus/PlayStatus";
 import styles from "./Item.module.less";
 const Item = ({ item }: { item: Song }) => {
   const { playingSong, isPlaying } = useAppSelector((state) => state.playing);
@@ -33,7 +27,7 @@ const Item = ({ item }: { item: Song }) => {
       })}
     >
       {/* 是否播放中 & 立即播放 */}
-      <div className={styles.play_status}>
+      {/* <div className={styles.play_status}>
         <PlayingIcon
           isAnimate={true}
           className={classnames(styles.play_status_icon, {
@@ -75,7 +69,19 @@ const Item = ({ item }: { item: Song }) => {
             dispatch(setPlaying(false));
           }}
         />
-      </div>
+      </div> */}
+      <PlayStatus
+        playingSong={playingSong}
+        isPlaying={isPlaying}
+        item={item}
+        handlePlay={() => {
+          dispatch(changePlayingSong(item));
+          dispatch(setPlaying(true));
+        }}
+        handlePause={() => {
+          dispatch(setPlaying(false));
+        }}
+      />
       <div className={styles.play_info}>
         <Tooltip title={item.name}>
           <p className={styles.play_info_name}>{item.name}</p>
