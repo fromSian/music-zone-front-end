@@ -1,16 +1,16 @@
 import { useAppDispatch, useAppSelector } from "@/states/hooks";
 import { addOne, playOneAlbum, setPlaying } from "@/states/playing.slice";
 import { AlbumDetail, Song } from "@/types/musicInfo";
-import { addPlayRecord, loveOrNotASong } from "@/utils/api";
+import { addPlayRecord } from "@/utils/api";
 import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { joinList2Str } from "@/utils/text";
 import { formatSecondsString } from "@/utils/time";
-import { Button, Empty, Spin, Tooltip, message } from "antd";
+import { Button, Empty, Spin, Tooltip } from "antd";
 import { AxiosResponse } from "axios";
 import classnames from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import {
   AddIcon,
@@ -27,7 +27,6 @@ const Album = () => {
   const { playingSong, isPlaying } = useAppSelector((state) => state.playing);
   const dispatch = useAppDispatch();
   const headerRef = useRef<HTMLDivElement | null>(null);
-  const queryClient = useQueryClient();
 
   const [album, setAlbum] = useState<AlbumDetail>();
   const { isLoading, isFetching, isSuccess, data } = useQuery({
@@ -180,68 +179,14 @@ const Album = () => {
                         <Tooltip title={"喜欢"}>
                           {song?.isLiked ? (
                             <HeartFullIcon
-                              onClick={async () => {
-                                try {
-                                  const res = await loveOrNotASong(
-                                    song.id,
-                                    false
-                                  );
-                                  if (res) {
-                                    setAlbum((v) => {
-                                      if (!v) {
-                                        return;
-                                      }
-                                      const songs = v.songs.map((item) => {
-                                        if (item.id === song.id) {
-                                          item.isLiked = false;
-                                        }
-                                        return item;
-                                      });
-                                      return { ...v, songs };
-                                    });
-                                    message.success("取消收藏成功！");
-                                  } else {
-                                    throw new Error("取消收藏失败");
-                                  }
-                                } catch (err) {
-                                  message.error("取消收藏失败");
-                                  getErrorMessage(err);
-                                }
-                              }}
+                              onClick={async () => {}}
                               className={
                                 styles.album_songs_item_content_operator_icon
                               }
                             />
                           ) : (
                             <HeartLineIcon
-                              onClick={async () => {
-                                try {
-                                  const res = await loveOrNotASong(
-                                    song.id,
-                                    true
-                                  );
-                                  if (res) {
-                                    setAlbum((v) => {
-                                      if (!v) {
-                                        return;
-                                      }
-                                      const songs = v.songs.map((item) => {
-                                        if (item.id === song.id) {
-                                          item.isLiked = true;
-                                        }
-                                        return item;
-                                      });
-                                      return { ...v, songs };
-                                    });
-                                    message.success("收藏成功！");
-                                  } else {
-                                    throw new Error("手擦失败");
-                                  }
-                                } catch (err) {
-                                  message.error("收藏失败");
-                                  getErrorMessage(err);
-                                }
-                              }}
+                              onClick={async () => {}}
                               className={
                                 styles.album_songs_item_content_operator_icon
                               }

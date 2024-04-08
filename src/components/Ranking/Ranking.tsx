@@ -106,7 +106,7 @@ const Ranking = () => {
                     <p className={styles.ranking_list_item_content_name}>
                       {item.detail?.name}
                     </p>
-                    {item.type === "ALBUM" || item.type === "SONG" ? (
+                    {item.type === "ALBUMS" || item.type === "SONGS" ? (
                       <p className={styles.ranking_list_item_content_artist}>
                         {joinList2Str(item.detail?.artist, "name")}
                       </p>
@@ -115,7 +115,7 @@ const Ranking = () => {
                     )}
                   </div>
                   <p className={styles.ranking_list_item_content_count}>5次</p>
-                  {item.type === "SONG" && (
+                  {item.type === "SONGS" && (
                     <div className={styles.ranking_list_item_content_operator}>
                       <Popover
                         rootClassName={styles.playlist}

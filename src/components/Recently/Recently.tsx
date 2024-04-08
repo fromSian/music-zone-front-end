@@ -15,7 +15,7 @@ const Recently = () => {
       try {
         const result: AxiosResponse<ListResult<PlayRecordList>> =
           await request.get(
-            `/play-record/?order=-update_time&size=12&type=PLAYLIST,ALBUM,ARTIST`
+            `/play-record/?order=-update_time&size=12&type=PLAYLISTS,ALBUMS,ARTISTS`
           );
         return result.data.results;
       } catch (err) {

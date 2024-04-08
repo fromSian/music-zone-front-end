@@ -105,21 +105,21 @@ export interface PlaylistEditSong {
 }
 
 type PlayRecordAlbum = {
-  type: "ALBUM";
+  type: "ALBUMS";
   detail: AlbumListItem;
 };
 type PlayRecordArtist = {
-  type: "ARTIST";
+  type: "ARTISTS";
   detail: ArtistListItem;
 };
 
 type PlayRecordSong = {
-  type: "SONG";
+  type: "SONGS";
   detail: Song;
 };
 
 type PlayRecordPlayList = {
-  type: "PLAYLIST";
+  type: "PLAYLISTS";
   detail: PlaylistListItem;
 };
 
