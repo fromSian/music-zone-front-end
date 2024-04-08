@@ -3,26 +3,35 @@ import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { Empty, Spin } from "antd";
 import { AxiosResponse } from "axios";
-import { useCallback } from "react";
-import { useQuery } from "react-query";
+import { useCallback, useEffect, useState } from "react";
 import { PlayRecordDefaultIcon } from "../Icons/Icons";
 import styles from "./Recently.module.less";
 
 const Recently = () => {
-  const { isLoading, isFetching, isSuccess, data } = useQuery({
-    queryKey: ["recently"],
-    queryFn: async () => {
-      try {
-        const result: AxiosResponse<ListResult<PlayRecordList>> =
-          await request.get(
-            `/play-record/?order=-update_time&size=12&type=PLAYLISTS,ALBUMS,ARTISTS`
-          );
-        return result.data.results;
-      } catch (err) {
-        console.log(getErrorMessage(err));
+  const [data, setData] = useState<PlayRecordList[]>();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const query = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const result: AxiosResponse<ListResult<PlayRecordList>> =
+        await request.get(
+          `/play-record/?order=-update_time&size=12&type=PLAYLISTS,ALBUMS,ARTISTS`
+        );
+
+      if (result && result.data && result.data.results) {
+        setData(result.data.results);
       }
-    },
-  });
+    } catch (err) {
+      console.log(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    query();
+  }, []);
 
   const handleGoTo = useCallback((type: PlayRecordType, id: string) => {
     window.open(`/library/${type.toLocaleLowerCase()}/${id}`);
@@ -33,9 +42,9 @@ const Recently = () => {
       <p className={styles.recently_header}>最近播放</p>
 
       <div className={styles.recently_content}>
-        {isLoading || isFetching ? (
+        {isLoading ? (
           <Spin />
-        ) : isSuccess && data && data.length ? (
+        ) : data && data.length ? (
           data.map((item) => (
             <div
               className={styles.recently_content_item}
