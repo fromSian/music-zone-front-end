@@ -132,7 +132,7 @@ const PlayList = () => {
                   playlist.image
                     ? playlist.image
                     : new URL(
-                        "@/asset/images/default/playlist.JPG",
+                        "@/asset/images/default/playlists.JPG",
                         import.meta.url
                       ).href
                 }

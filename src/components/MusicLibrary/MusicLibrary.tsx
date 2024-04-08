@@ -185,7 +185,24 @@ const MusicLibrary = () => {
               >
                 <div className={styles.music_library_content_list_item_image}>
                   <img
-                    src={item.image}
+                    src={
+                      item.image
+                        ? item.image
+                        : type === "ablums"
+                        ? new URL(
+                            `@/asset/images/default/albums.JPG`,
+                            import.meta.url
+                          ).href
+                        : type === "playlists"
+                        ? new URL(
+                            `@/asset/images/default/playlists.JPG`,
+                            import.meta.url
+                          ).href
+                        : new URL(
+                            `@/asset/images/default/artists.JPG`,
+                            import.meta.url
+                          ).href
+                    }
                     className={
                       styles.music_library_content_list_item_image_main
                     }

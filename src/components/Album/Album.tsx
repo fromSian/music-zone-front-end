@@ -92,7 +92,7 @@ const Album = () => {
                   album.image
                     ? album.image
                     : new URL(
-                        "@/asset/images/default/album.JPG",
+                        "@/asset/images/default/albums.JPG",
                         import.meta.url
                       ).href
                 }
