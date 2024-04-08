@@ -23,6 +23,8 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
+      max-height: 100%;
+      max-width: 100%;
     }
 
     .playbar_album_image_loading {
@@ -168,7 +170,8 @@
 }
 
 .playbar_inactive {
-  .play_control_switch_play {
+  .play_control_switch_icon,
+  .play_control_bar {
     color: fade(@font-color-light, 60);
     pointer-events: none;
   }

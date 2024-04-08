@@ -93,6 +93,8 @@ const Playbar = () => {
 
   useEffect(() => {
     if (!song) {
+      setCurrent(0);
+      setIsReady(false);
       return;
     }
 
@@ -102,7 +104,6 @@ const Playbar = () => {
     }
     // audioRef.current.src = new URL(song.audio, import.meta.url).href;
     audioRef.current.src = song.audio;
-    audioRef.current?.load();
 
     const ready = () => {
       setIsReady(true);
@@ -183,33 +184,44 @@ const Playbar = () => {
           ref={audioRef}
         ></audio>
         <div className={styles.playbar_album_image}>
-          <BsFillMusicPlayerFill className={styles.playbar_album_image_main} />
+          {song?.album.image ? (
+            <img
+              src={song.album.image}
+              className={styles.playbar_album_image_main}
+            />
+          ) : (
+            <BsFillMusicPlayerFill
+              className={styles.playbar_album_image_main}
+            />
+          )}
           {isLoading && <Spin className={styles.playbar_album_image_loading} />}
         </div>
-        {song && (
-          <div className={styles.playbar_info}>
-            <Tooltip title={song.name}>
-              <div className={styles.playbar_info_name_wrap} ref={nameDivRef}>
-                {/* 跑马灯 */}
-                <p
-                  ref={namePRef}
-                  className={styles.playbar_info_name}
-                  style={{ left: nameLeft }}
-                >
-                  {song.name}
-                </p>
-              </div>
-            </Tooltip>
-            <Tooltip title={song.album.name}>
-              <p className={styles.playbar_info_album}>{song.album.name}</p>
-            </Tooltip>
-            <Tooltip title={joinList2Str(song.artist, "name")}>
-              <p className={styles.playbar_info_artist}>
-                {joinList2Str(song.artist, "name")}
+        <div className={styles.playbar_info}>
+          <Tooltip title={song?.name || "未播放"}>
+            <div className={styles.playbar_info_name_wrap} ref={nameDivRef}>
+              {/* 跑马灯 */}
+              <p
+                ref={namePRef}
+                className={styles.playbar_info_name}
+                style={{ left: nameLeft }}
+              >
+                {song?.name || "未播放"}
               </p>
-            </Tooltip>
-          </div>
-        )}
+            </div>
+          </Tooltip>
+          <Tooltip title={song?.album.name || ""}>
+            <p className={styles.playbar_info_album}>
+              {song?.album.name || ""}
+            </p>
+          </Tooltip>
+          <Tooltip
+            title={song?.artist ? joinList2Str(song.artist, "name") : ""}
+          >
+            <p className={styles.playbar_info_artist}>
+              {song?.artist ? joinList2Str(song.artist, "name") : ""}
+            </p>
+          </Tooltip>
+        </div>
 
         <div className={styles.play_control}>
           <div className={styles.play_control_switch}>
@@ -284,7 +296,6 @@ const Playbar = () => {
                     (event.nativeEvent.offsetX /
                       timeDivRef.current.clientWidth) *
                     duration;
-                  console.log(audioRef.current.currentTime);
                 }
               }}
             >
