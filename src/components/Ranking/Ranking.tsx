@@ -231,7 +231,9 @@ const Ranking = () => {
                     </div>
                   )}
 
-                  <p className={styles.ranking_list_item_content_count}>5次</p>
+                  <p className={styles.ranking_list_item_content_count}>
+                    {item.count}次
+                  </p>
                 </div>
               </li>
             ))}
