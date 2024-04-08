@@ -132,6 +132,7 @@ const Playbar = () => {
     audioRef.current.addEventListener("seeked", seeked);
 
     const ended = () => {
+      dispatch(setPlaying(true));
       dispatch(playNext());
     };
     audioRef.current.addEventListener("ended", ended);
