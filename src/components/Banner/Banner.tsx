@@ -7,7 +7,6 @@ import { AxiosResponse } from "axios";
 import classnames from "classnames";
 import { map } from "lodash";
 import { MouseEvent, useCallback, useEffect, useRef, useState } from "react";
-import { useQuery } from "react-query";
 import styles from "./index.module.less";
 
 const BannerItem = ({
@@ -54,9 +53,6 @@ const BannerItem = ({
 const interval = 3000;
 const animationTime = 1000;
 
-const page = 1;
-const size = 5;
-
 const Banner = () => {
   const [bannerData, setBannerData] = useState<AlbumListItem[]>([]);
 
@@ -68,30 +64,31 @@ const Banner = () => {
   const animateRef = useRef<ReturnType<typeof setInterval>>();
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const { isLoading, isFetching, isSuccess, data } = useQuery({
-    queryKey: ["albums-banner", { page, size }] as const,
-    queryFn: async ({ queryKey }) => {
-      try {
-        const [_key, { page, size }] = queryKey;
-        const result: AxiosResponse<ListResult<AlbumListItem>> =
-          await request.get(`/albums/?page=${page}&size=${size}`);
-        return result.data.results;
-      } catch (err) {
-        console.log(getErrorMessage(err));
+  const [isLoading, setIsLoading] = useState(false);
+
+  const query = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const result: AxiosResponse<ListResult<AlbumListItem>> =
+        await request.get(`/albums/?page=1&size=5`);
+
+      if (result && result.data && result.data.results.length) {
+        const data = result.data.results;
+        const _bannerData = [data[data.length - 1], ...data, data[0]];
+        setBannerData(_bannerData);
+        setCurrentIndex(1);
+        setTranslateX((-100 / _bannerData.length) * 1);
       }
-    },
-  });
+    } catch (err) {
+      console.log(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (isSuccess && data?.length) {
-      const _bannerData = [data[data.length - 1], ...data, data[0]];
-      setBannerData(_bannerData);
-      setCurrentIndex(1);
-      setTranslateX((-100 / _bannerData.length) * 1);
-    } else {
-      setBannerData([]);
-    }
-  }, [isSuccess, data]);
+    query();
+  }, []);
 
   const move = useCallback(
     (end: number) => {
@@ -146,7 +143,7 @@ const Banner = () => {
 
   return (
     <div className={styles.banner}>
-      {isLoading || isFetching ? (
+      {isLoading ? (
         <Spin />
       ) : (
         <>
