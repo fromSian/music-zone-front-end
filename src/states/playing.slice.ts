@@ -152,6 +152,13 @@ export const playingListSlice = createSlice({
       state.listInAddOrder = [];
       state.listInPlayOrder = [];
     },
+    //  排行榜、专辑、歌单收藏或取消收藏时同步playbar、playlist状态
+    updateLoveOrNot: (
+      state,
+      action: PayloadAction<{ id: string; love: boolean }>
+    ) => {
+      // state.playingSortType = action.payload;
+    },
   },
   extraReducers(builder) {
     builder.addCase(likeASong.fulfilled, (state, action) => {
@@ -190,6 +197,7 @@ export const {
   setPlaying,
   changePlayingSortType,
   clearAll,
+  updateLoveOrNot,
 } = playingListSlice.actions;
 
 export default playingListSlice.reducer;

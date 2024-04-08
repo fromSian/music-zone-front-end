@@ -1,12 +1,15 @@
 import { useAppDispatch, useAppSelector } from "@/states/hooks";
+import { addLoveRecord } from "@/states/loves.slice";
 import {
   changePlayingSong,
   removeOne,
   setPlaying,
 } from "@/states/playing.slice";
 import { Song } from "@/types/musicInfo";
+import { loveOrNotASong } from "@/utils/api";
+import { getErrorMessage } from "@/utils/error";
 import { joinList2Str } from "@/utils/text";
-import { Popconfirm, Tooltip } from "antd";
+import { Popconfirm, Tooltip, message } from "antd";
 import classnames from "classnames";
 import { useCallback, useState } from "react";
 import { DeleteIcon, HeartFullIcon, HeartLineIcon } from "../Icons/Icons";
@@ -14,6 +17,7 @@ import PlayStatus from "../PlayStatus/PlayStatus";
 import styles from "./Item.module.less";
 const Item = ({ item }: { item: Song }) => {
   const { playingSong, isPlaying } = useAppSelector((state) => state.playing);
+  const { loveOperationData } = useAppSelector((state) => state.love);
   const dispatch = useAppDispatch();
   const handleDelete = useCallback(() => {
     dispatch(removeOne(item.id));
@@ -100,7 +104,55 @@ const Item = ({ item }: { item: Song }) => {
       >
         <Tooltip title={true ? "取消收藏" : "收藏"}>
           <div className={styles.play_operator_love}>
-            {true ? <HeartFullIcon /> : <HeartLineIcon />}
+            {(
+              loveOperationData.hasOwnProperty(item.id)
+                ? loveOperationData[item.id]
+                : item.isLiked
+            ) ? (
+              <HeartFullIcon
+                onClick={async () => {
+                  try {
+                    const res = await loveOrNotASong(item.id, false);
+                    if (res) {
+                      dispatch(
+                        addLoveRecord({
+                          id: item.id,
+                          isLoved: false,
+                        })
+                      );
+                      message.success("取消收藏成功");
+                    } else {
+                      message.error("取消收藏失败");
+                    }
+                  } catch (err) {
+                    message.error("取消收藏失败");
+                    getErrorMessage(err);
+                  }
+                }}
+              />
+            ) : (
+              <HeartLineIcon
+                onClick={async () => {
+                  try {
+                    const res = await loveOrNotASong(item.id, true);
+                    if (res) {
+                      dispatch(
+                        addLoveRecord({
+                          id: item.id,
+                          isLoved: true,
+                        })
+                      );
+                      message.success("收藏成功");
+                    } else {
+                      message.error("收藏失败");
+                    }
+                  } catch (err) {
+                    message.error("收藏失败");
+                    getErrorMessage(err);
+                  }
+                }}
+              />
+            )}
           </div>
         </Tooltip>
 

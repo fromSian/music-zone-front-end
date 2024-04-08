@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
-import playingReducer from './playing.slice';
-const store =  configureStore({
-    reducer: {
-        playing: playingReducer
-    }
-})
+import loveReducer from "./loves.slice";
+import playingReducer from "./playing.slice";
+const store = configureStore({
+  reducer: {
+    playing: playingReducer,
+    love: loveReducer,
+  },
+});
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
 export default store;

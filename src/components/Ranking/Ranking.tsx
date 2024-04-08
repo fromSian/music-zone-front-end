@@ -1,10 +1,12 @@
 import { useAppDispatch, useAppSelector } from "@/states/hooks";
+import { addLoveRecord } from "@/states/loves.slice";
 import { addOne, setPlaying } from "@/states/playing.slice";
 import { ListResult, PlayRecordList } from "@/types/musicInfo";
+import { loveOrNotASong } from "@/utils/api";
 import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { joinList2Str } from "@/utils/text";
-import { Divider, Select, Spin, Tooltip } from "antd";
+import { Divider, Select, Spin, Tooltip, message } from "antd";
 import { AxiosResponse } from "axios";
 import classnames from "classnames";
 import { map } from "lodash";
@@ -41,6 +43,7 @@ const Ranking = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const { isPlaying, playingSong } = useAppSelector((state) => state.playing);
+  const { loveOperationData } = useAppSelector((state) => state.love);
   const dispatch = useAppDispatch();
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [data, setData] = useState<PlayRecordList[]>([]);
@@ -200,17 +203,65 @@ const Ranking = () => {
                         />
                       </Tooltip>
                       <Tooltip title={"喜欢"}>
-                        {item.detail.isLiked ? (
+                        {(
+                          loveOperationData.hasOwnProperty(item.target_id)
+                            ? loveOperationData[item.target_id]
+                            : item.detail.isLiked
+                        ) ? (
                           <HeartFullIcon
                             className={
                               styles.ranking_list_item_content_operator_icon
                             }
+                            onClick={async () => {
+                              try {
+                                const res = await loveOrNotASong(
+                                  item.detail.id,
+                                  false
+                                );
+                                if (res) {
+                                  dispatch(
+                                    addLoveRecord({
+                                      id: item.detail.id,
+                                      isLoved: false,
+                                    })
+                                  );
+                                  message.success("取消收藏成功");
+                                } else {
+                                  message.error("取消收藏失败");
+                                }
+                              } catch (err) {
+                                message.error("取消收藏失败");
+                                getErrorMessage(err);
+                              }
+                            }}
                           />
                         ) : (
                           <HeartLineIcon
                             className={
                               styles.ranking_list_item_content_operator_icon
                             }
+                            onClick={async () => {
+                              try {
+                                const res = await loveOrNotASong(
+                                  item.detail.id,
+                                  true
+                                );
+                                if (res) {
+                                  dispatch(
+                                    addLoveRecord({
+                                      id: item.detail.id,
+                                      isLoved: true,
+                                    })
+                                  );
+                                  message.success("收藏成功");
+                                } else {
+                                  message.error("收藏失败");
+                                }
+                              } catch (err) {
+                                message.error("收藏失败");
+                                getErrorMessage(err);
+                              }
+                            }}
                           />
                         )}
                       </Tooltip>

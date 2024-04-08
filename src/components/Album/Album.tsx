@@ -1,12 +1,13 @@
 import { useAppDispatch, useAppSelector } from "@/states/hooks";
+import { addLoveRecord } from "@/states/loves.slice";
 import { addOne, playOneAlbum, setPlaying } from "@/states/playing.slice";
 import { AlbumDetail, Song } from "@/types/musicInfo";
-import { addPlayRecord } from "@/utils/api";
+import { addPlayRecord, loveOrNotASong } from "@/utils/api";
 import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { joinList2Str } from "@/utils/text";
 import { formatSecondsString } from "@/utils/time";
-import { Button, Empty, Spin, Tooltip } from "antd";
+import { Button, Empty, Spin, Tooltip, message } from "antd";
 import { AxiosResponse } from "axios";
 import classnames from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -24,6 +25,7 @@ import styles from "./Album.module.less";
 const Album = () => {
   const { id, song_id } = useParams();
   const { playingSong, isPlaying } = useAppSelector((state) => state.playing);
+  const { loveOperationData } = useAppSelector((state) => state.love);
   const dispatch = useAppDispatch();
   const headerRef = useRef<HTMLDivElement | null>(null);
 
@@ -175,23 +177,66 @@ const Album = () => {
                             }
                           />
                         </Tooltip>
-                        <Tooltip title={"喜欢"}>
-                          {song?.isLiked ? (
-                            <HeartFullIcon
-                              onClick={async () => {}}
-                              className={
-                                styles.album_songs_item_content_operator_icon
+                        {song &&
+                        (loveOperationData.hasOwnProperty(song?.id)
+                          ? loveOperationData[song?.id]
+                          : song?.isLiked) ? (
+                          <HeartFullIcon
+                            onClick={async () => {
+                              try {
+                                const res = await loveOrNotASong(
+                                  song.id,
+                                  false
+                                );
+                                if (res) {
+                                  dispatch(
+                                    addLoveRecord({
+                                      id: song.id,
+                                      isLoved: false,
+                                    })
+                                  );
+                                  message.success("取消收藏成功");
+                                } else {
+                                  message.error("取消收藏失败");
+                                }
+                              } catch (err) {
+                                message.error("取消收藏失败");
+                                getErrorMessage(err);
                               }
-                            />
-                          ) : (
-                            <HeartLineIcon
-                              onClick={async () => {}}
-                              className={
-                                styles.album_songs_item_content_operator_icon
+                            }}
+                            className={
+                              styles.album_songs_item_content_operator_icon
+                            }
+                          />
+                        ) : (
+                          <HeartLineIcon
+                            onClick={async () => {
+                              if (!song) {
+                                return;
                               }
-                            />
-                          )}
-                        </Tooltip>
+                              try {
+                                const res = await loveOrNotASong(song.id, true);
+                                if (res) {
+                                  dispatch(
+                                    addLoveRecord({
+                                      id: song.id,
+                                      isLoved: true,
+                                    })
+                                  );
+                                  message.success("收藏成功");
+                                } else {
+                                  message.error("收藏失败");
+                                }
+                              } catch (err) {
+                                message.error("收藏失败");
+                                getErrorMessage(err);
+                              }
+                            }}
+                            className={
+                              styles.album_songs_item_content_operator_icon
+                            }
+                          />
+                        )}
                         {/* <Tooltip title={"播放"}>
                           <PlayIcon
                             onClick={() => handlePlayOneSong(song)}

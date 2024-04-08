@@ -1,4 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/states/hooks";
+import { addLoveRecord } from "@/states/loves.slice";
 import {
   changePlayingSortType,
   playNext,
@@ -9,10 +10,11 @@ import {
   shufflePlayingList,
 } from "@/states/playing.slice";
 import { PlayingSortType } from "@/types/playInfo";
-import { addPlayRecord } from "@/utils/api";
+import { addPlayRecord, loveOrNotASong } from "@/utils/api";
+import { getErrorMessage } from "@/utils/error";
 import { joinList2Str } from "@/utils/text";
 import { formatTime } from "@/utils/time";
-import { Spin, Tooltip } from "antd";
+import { Spin, Tooltip, message } from "antd";
 import classnames from "classnames";
 import { MouseEvent, useEffect, useRef, useState } from "react";
 import { BsFillMusicPlayerFill } from "react-icons/bs";
@@ -35,6 +37,8 @@ import PlayingList from "./PlayingList";
 import styles from "./playbar.module.less";
 
 const Playbar = () => {
+  const { loveOperationData } = useAppSelector((state) => state.love);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const volumeDivRef = useRef<HTMLDivElement | null>(null);
   const timeDivRef = useRef<HTMLDivElement | null>(null);
@@ -233,10 +237,58 @@ const Playbar = () => {
 
         <div className={styles.play_control}>
           <div className={styles.play_control_switch}>
-            {song?.isLiked ? (
-              <HeartFullIcon className={styles.play_control_switch_icon} />
+            {song &&
+            (loveOperationData.hasOwnProperty(song?.id)
+              ? loveOperationData[song?.id]
+              : song?.isLiked) ? (
+              <HeartFullIcon
+                className={styles.play_control_switch_icon}
+                onClick={async () => {
+                  try {
+                    const res = await loveOrNotASong(song.id, false);
+                    if (res) {
+                      dispatch(
+                        addLoveRecord({
+                          id: song.id,
+                          isLoved: false,
+                        })
+                      );
+                      message.success("取消收藏成功");
+                    } else {
+                      message.error("取消收藏失败");
+                    }
+                  } catch (err) {
+                    message.error("取消收藏失败");
+                    getErrorMessage(err);
+                  }
+                }}
+              />
             ) : (
-              <HeartLineIcon className={styles.play_control_switch_icon} />
+              <HeartLineIcon
+                className={styles.play_control_switch_icon}
+                onClick={async () => {
+                  if (!song) {
+                    return;
+                  }
+                  try {
+                    const res = await loveOrNotASong(song.id, true);
+                    if (res) {
+                      dispatch(
+                        addLoveRecord({
+                          id: song.id,
+                          isLoved: true,
+                        })
+                      );
+                      message.success("收藏成功");
+                    } else {
+                      message.error("收藏失败");
+                    }
+                  } catch (err) {
+                    message.error("收藏失败");
+                    getErrorMessage(err);
+                  }
+                }}
+              />
             )}
             <PlayPrevIcon
               className={styles.play_control_switch_icon}
