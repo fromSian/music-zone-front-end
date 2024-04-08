@@ -6,10 +6,10 @@ import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { joinList2Str } from "@/utils/text";
 import { formatSecondsString } from "@/utils/time";
-import { Button, Empty, Spin, Tooltip } from "antd";
+import { Button, Empty, Spin, Tooltip, message } from "antd";
 import { AxiosResponse } from "axios";
 import classnames from "classnames";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import {
@@ -26,12 +26,9 @@ const Album = () => {
   const dispatch = useAppDispatch();
   const headerRef = useRef<HTMLDivElement | null>(null);
   const queryClient = useQueryClient();
-  const {
-    isLoading,
-    isFetching,
-    isSuccess,
-    data: album,
-  } = useQuery({
+
+  const [album, setAlbum] = useState<AlbumDetail>();
+  const { isLoading, isFetching, isSuccess, data } = useQuery({
     queryKey: ["album", id],
     queryFn: async ({ queryKey }) => {
       try {
@@ -46,6 +43,12 @@ const Album = () => {
     },
     enabled: !!id,
   });
+
+  useEffect(() => {
+    if (data) {
+      setAlbum(data);
+    }
+  }, [data]);
 
   /**
    * 顺序播放
@@ -171,14 +174,24 @@ const Album = () => {
                                     false
                                   );
                                   if (res) {
-                                    queryClient.invalidateQueries([
-                                      "album",
-                                      id,
-                                    ]);
+                                    setAlbum((v) => {
+                                      if (!v) {
+                                        return;
+                                      }
+                                      const songs = v.songs.map((item) => {
+                                        if (item.id === song.id) {
+                                          item.isLiked = false;
+                                        }
+                                        return item;
+                                      });
+                                      return { ...v, songs };
+                                    });
+                                    message.success("取消收藏成功！");
                                   } else {
-                                    throw new Error("操作失败");
+                                    throw new Error("取消收藏失败");
                                   }
                                 } catch (err) {
+                                  message.error("取消收藏失败");
                                   getErrorMessage(err);
                                 }
                               }}
@@ -195,14 +208,24 @@ const Album = () => {
                                     true
                                   );
                                   if (res) {
-                                    queryClient.invalidateQueries([
-                                      "album",
-                                      id,
-                                    ]);
+                                    setAlbum((v) => {
+                                      if (!v) {
+                                        return;
+                                      }
+                                      const songs = v.songs.map((item) => {
+                                        if (item.id === song.id) {
+                                          item.isLiked = true;
+                                        }
+                                        return item;
+                                      });
+                                      return { ...v, songs };
+                                    });
+                                    message.success("收藏成功！");
                                   } else {
-                                    throw new Error("操作失败");
+                                    throw new Error("手擦失败");
                                   }
                                 } catch (err) {
+                                  message.error("收藏失败");
                                   getErrorMessage(err);
                                 }
                               }}
