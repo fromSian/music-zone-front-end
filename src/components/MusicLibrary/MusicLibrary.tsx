@@ -24,11 +24,11 @@ const tagOptions = [
     key: "playlists",
     disabled: false,
   },
-  {
-    label: "艺人",
-    key: "artists",
-    disabled: true,
-  },
+  // {
+  //   label: "艺人",
+  //   key: "artists",
+  //   disabled: true,
+  // },
 ];
 
 const modeOptions = [
