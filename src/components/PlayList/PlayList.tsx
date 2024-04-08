@@ -1,57 +1,62 @@
-import { useAppDispatch } from "@/states/hooks";
-import { addOne, playOneAlbum } from "@/states/playing.slice";
-import { AlbumDetail, ListResult, Song } from "@/types/musicInfo";
+import { useAppDispatch, useAppSelector } from "@/states/hooks";
+import { addOne, playOneAlbum, setPlaying } from "@/states/playing.slice";
+import { ListResult, PlaylistListItem, Song } from "@/types/musicInfo";
 import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { Button, Divider, Empty, Spin, Tooltip } from "antd";
 import { AxiosResponse } from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import {
   AddIcon,
   HeartLineIcon,
-  PlayIcon,
   PlayModeOrderIcon,
   PlayModeShuffleIcon,
 } from "../Icons/Icons";
+import PlayStatus from "../PlayStatus/PlayStatus";
 import styles from "./PlayList.module.less";
 
 const size = 10;
 const PlayList = () => {
   const { id } = useParams();
+  const { playingSong, isPlaying } = useAppSelector((state) => state.playing);
   const dispatch = useAppDispatch();
   const headerRef = useRef<HTMLDivElement | null>(null);
-
-  const {
-    isLoading,
-    isFetching,
-    isSuccess,
-    data: playlist,
-  } = useQuery({
-    queryKey: ["playlist", id],
-    queryFn: async ({ queryKey }) => {
-      try {
-        const [_key, id] = queryKey;
-        const result: AxiosResponse<AlbumDetail> = await request.get(
-          `/playlists/${id}/`
-        );
-        return result.data;
-      } catch (err) {
-        getErrorMessage(err);
-      }
-    },
-    enabled: !!id,
-  });
 
   const [data, setData] = useState<Song[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const [cur, setCur] = useState(1);
   const [total, setTotal] = useState<number | undefined>(undefined);
 
   const controllerRef = useRef<AbortController>();
+  const pageRef = useRef(1);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [playlist, setPlaylist] = useState<PlaylistListItem>();
+
+  const queryPlaylist = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const result: AxiosResponse<PlaylistListItem> = await request.get(
+        `/playlists/${id}/`
+      );
+      if (result && result.data) {
+        setPlaylist(result.data);
+      } else {
+        setPlaylist(undefined);
+      }
+    } catch (err) {
+      getErrorMessage(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    queryPlaylist();
+  }, [queryPlaylist]);
 
   const loadMoreData = useCallback(async (page: number, size: number) => {
     if (loading) {
@@ -74,7 +79,7 @@ const PlayList = () => {
       if (result && result.data) {
         setData((data) => [...data, ...result.data.results]);
         setLoading(false);
-        setCur((v) => v + 1);
+        pageRef.current = pageRef.current + 1;
         setTotal(result.data.count);
       }
     } catch (err) {
@@ -84,28 +89,28 @@ const PlayList = () => {
   }, []);
 
   useEffect(() => {
-    loadMoreData(cur, size);
+    loadMoreData(1, size);
   }, []);
 
   /**
    * 顺序播放
    */
   const handlePlayInOrder = useCallback(() => {
-    if (!playlist) {
+    if (!data) {
       return;
     }
-    dispatch(playOneAlbum({ songs: playlist.songs }));
-  }, [playlist]);
+    dispatch(playOneAlbum({ songs: data }));
+  }, [data]);
 
   /**
    * 乱序播放
    */
   const handlePlayShuffle = useCallback(() => {
-    if (!playlist) {
+    if (!data) {
       return;
     }
-    dispatch(playOneAlbum({ songs: playlist.songs, isShuffle: true }));
-  }, [playlist]);
+    dispatch(playOneAlbum({ songs: data, isShuffle: true }));
+  }, [data]);
 
   /**
    * 加入播放列表
@@ -114,15 +119,11 @@ const PlayList = () => {
     dispatch(addOne({ song }));
   }, []);
 
-  const handlePlayOneSong = useCallback((song: Song) => {
-    dispatch(addOne({ song, isPlayNow: true }));
-  }, []);
-
   return (
     <div className={styles.playlist}>
-      {isLoading || isFetching ? (
+      {isLoading ? (
         <Spin />
-      ) : isSuccess && playlist ? (
+      ) : playlist ? (
         <>
           <div className={styles.playlist_header} ref={headerRef}>
             <div className={styles.playlist_image}>
@@ -164,11 +165,11 @@ const PlayList = () => {
               </div>
             </div>
           </div>
-          <div className={styles.playlist_songs} id="scrollContent">
+          <div id="scrollContent" className={styles.playlist_songs_wrap}>
             <InfiniteScroll
               dataLength={data.length}
-              next={() => loadMoreData(cur, size)}
-              hasMore={!total || data.length < total}
+              next={() => loadMoreData(pageRef.current, size)}
+              hasMore={total === undefined || data.length < total}
               loader={
                 <Divider>
                   <Spin />
@@ -177,49 +178,54 @@ const PlayList = () => {
               endMessage={<Divider plain>已加载全部🫠</Divider>}
               scrollableTarget={"scrollContent"}
             >
-              {data.map((song, index) => (
-                <li className={styles.playlist_songs_item} key={song.id}>
-                  <div className={styles.playlist_songs_item_content}>
-                    <p className={styles.playlist_songs_item_content_index}>
-                      {index + 1}
-                    </p>
-                    <div className={styles.playlist_songs_item_content_info}>
-                      <p className={styles.playlist_songs_item_content_name}>
-                        {song.name}
+              <div className={styles.playlist_songs}>
+                {data.map((song, index) => (
+                  <li className={styles.playlist_songs_item} key={song.id}>
+                    <div className={styles.playlist_songs_item_content}>
+                      <p className={styles.playlist_songs_item_content_index}>
+                        {index + 1}
                       </p>
+                      <PlayStatus
+                        playingSong={playingSong}
+                        isPlaying={isPlaying}
+                        item={song}
+                        handlePlay={() => {
+                          dispatch(addOne({ song, isPlayNow: true }));
+                        }}
+                        handlePause={() => {
+                          dispatch(setPlaying(false));
+                        }}
+                      />
+                      <div className={styles.playlist_songs_item_content_info}>
+                        <p className={styles.playlist_songs_item_content_name}>
+                          {song.name}
+                        </p>
+                      </div>
+                      <div
+                        className={styles.playlist_songs_item_content_operator}
+                      >
+                        <Tooltip title={"加入播放列表"}>
+                          <AddIcon
+                            onClick={() => {
+                              addToPlayList(song);
+                            }}
+                            className={
+                              styles.playlist_songs_item_content_operator_icon
+                            }
+                          />
+                        </Tooltip>
+                        <Tooltip title={"喜欢"}>
+                          <HeartLineIcon
+                            className={
+                              styles.playlist_songs_item_content_operator_icon
+                            }
+                          />
+                        </Tooltip>
+                      </div>
                     </div>
-                    <div
-                      className={styles.playlist_songs_item_content_operator}
-                    >
-                      <Tooltip title={"加入播放列表"}>
-                        <AddIcon
-                          onClick={() => {
-                            addToPlayList(song);
-                          }}
-                          className={
-                            styles.playlist_songs_item_content_operator_icon
-                          }
-                        />
-                      </Tooltip>
-                      <Tooltip title={"喜欢"}>
-                        <HeartLineIcon
-                          className={
-                            styles.playlist_songs_item_content_operator_icon
-                          }
-                        />
-                      </Tooltip>
-                      <Tooltip title={"播放"}>
-                        <PlayIcon
-                          onClick={() => handlePlayOneSong(song)}
-                          className={
-                            styles.playlist_songs_item_content_operator_icon
-                          }
-                        />
-                      </Tooltip>
-                    </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                ))}
+              </div>
             </InfiniteScroll>
           </div>
         </>
