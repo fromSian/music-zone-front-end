@@ -25,10 +25,18 @@ const routerConfig = [
     element: lazyLoad("Home"),
   },
   {
-    name: "排行榜",
+    name: "播放排行榜",
     path: "/rank",
     isMenu: true,
     element: lazyLoad("Rank"),
+    children: [
+      {
+        name: "播放排行榜",
+        path: "/rank/:type",
+        isMenu: true,
+        element: lazyLoad("Rank"),
+      },
+    ],
   },
   {
     name: "音乐库",

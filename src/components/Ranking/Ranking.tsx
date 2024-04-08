@@ -4,10 +4,13 @@ import { ListResult, PlayRecordList } from "@/types/musicInfo";
 import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { joinList2Str } from "@/utils/text";
-import { Empty, Select, Spin, Tooltip } from "antd";
+import { Divider, Select, Spin, Tooltip } from "antd";
 import { AxiosResponse } from "axios";
 import classnames from "classnames";
+import { map } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { useNavigate, useParams } from "react-router-dom";
 import { AddIcon, HeartFullIcon, HeartLineIcon } from "../Icons/Icons";
 import PlayStatus from "../PlayStatus/PlayStatus";
 import styles from "./index.module.less";
@@ -18,58 +21,87 @@ export const rankingTypes = [
   },
   {
     label: "歌曲",
-    value: "SONGS",
+    value: "songs",
   },
   {
     label: "专辑",
-    value: "ALBUMS",
+    value: "albums",
   },
   {
     label: "歌单",
-    value: "PLAYLISTS",
+    value: "playlists",
   },
   // {
   //   label: "艺人",
   //   value: "ARTISTS",
   // },
 ];
+const size = 10;
 const Ranking = () => {
+  const { type } = useParams();
+  const navigate = useNavigate();
   const { isPlaying, playingSong } = useAppSelector((state) => state.playing);
   const dispatch = useAppDispatch();
   const wrapRef = useRef<HTMLDivElement | null>(null);
-  const [selectedType, setSelectedType] = useState<string>(
-    rankingTypes[0].value
-  );
-  const [data, setData] = useState<PlayRecordList[]>();
+  const [data, setData] = useState<PlayRecordList[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [total, setTotal] = useState<number | undefined>(undefined);
+  const controllerRef = useRef<AbortController>();
 
-  const query = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setIsSuccess(false);
-      const result: AxiosResponse<ListResult<PlayRecordList>> =
-        await request.get(
-          `/play-record/?order=-count&size=50&type=${selectedType}`
-        );
-      if (result && result.data && result.data.results) {
-        setIsSuccess(true);
-        setData(result.data.results);
+  const pageRef = useRef(1);
+
+  const loadMoreData = useCallback(
+    async (type: string, page: number, size: number) => {
+      if (isLoading) {
+        return;
       }
-    } catch (err) {
-      console.log(getErrorMessage(err));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedType]);
+      try {
+        setIsLoading(true);
+        if (controllerRef.current) {
+          controllerRef.current.abort();
+          controllerRef.current = undefined;
+        }
+
+        controllerRef.current = new AbortController();
+        const result: AxiosResponse<ListResult<PlayRecordList>> =
+          await request.get(
+            `/play-record/?order=-count&size=${size}&page=${page}&type=${type.toUpperCase()}`
+          );
+        if (result && result.data && result.data.results) {
+          setData((data) => [...data, ...result.data.results]);
+          pageRef.current = pageRef.current + 1;
+          setTotal(result.data.count);
+        }
+      } catch (err) {
+        console.log(getErrorMessage(err));
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    query();
-  }, [query]);
+    if (!type || !map(rankingTypes, "value").includes(type)) {
+      navigate(`/rank/all`);
+      return;
+    }
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+      controllerRef.current = undefined;
+    }
+    setData([]);
+    pageRef.current = 1;
+    setTotal(undefined);
+    loadMoreData(type, 1, size);
 
-  const handleTypeChange = useCallback((value: string) => {
-    setSelectedType(value);
-  }, []);
+    return () => {
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+        controllerRef.current = undefined;
+      }
+    };
+  }, [type]);
 
   const handleGoTo = useCallback((item: PlayRecordList) => {
     if (item.type === "SONGS") {
@@ -85,18 +117,18 @@ const Ranking = () => {
     <div className={styles.ranking} ref={wrapRef}>
       <div className={styles.list_select}>
         <ul>
-          {rankingTypes.map((type) => (
+          {rankingTypes.map((item) => (
             <li
               className={classnames(styles.list_select_item, {
-                [styles.list_select_item_active]: selectedType === type.value,
+                [styles.list_select_item_active]: type === item.value,
               })}
-              key={type.value}
-              onClick={() => handleTypeChange(type.value)}
+              key={item.value}
+              onClick={() => navigate(`/rank/${item.value}`)}
             >
               <div className={styles.list_select_item_content}>
                 <div className={styles.list_select_item_content_line} />
                 <p className={styles.list_select_item_content_label}>
-                  {type.label}
+                  {item.label}
                 </p>
               </div>
             </li>
@@ -107,22 +139,31 @@ const Ranking = () => {
       <div className={styles.dropdown_select}>
         <Select
           options={rankingTypes}
-          value={selectedType}
-          onChange={handleTypeChange}
+          value={type}
+          onChange={(value) => navigate(`/rank/${value}`)}
         />
       </div>
-      <div className={styles.ranking_list}>
-        {isLoading ? (
-          <Spin />
-        ) : isSuccess && data && data.length ? (
-          <ol>
+      <div className={styles.ranking_list} id="scrollContent">
+        <ol>
+          <InfiniteScroll
+            dataLength={data.length}
+            next={() => loadMoreData(type || "all", pageRef.current, size)}
+            hasMore={total === undefined || data.length < total}
+            loader={
+              <Divider>
+                <Spin />
+              </Divider>
+            }
+            endMessage={<Divider plain>已加载全部🫠</Divider>}
+            scrollableTarget={"scrollContent"}
+          >
             {data.map((item, index) => (
               <li className={styles.ranking_list_item} key={item.id}>
                 <div className={styles.ranking_list_item_content}>
                   <p className={styles.ranking_list_item_content_index}>
                     {index + 1}
                   </p>
-                  {selectedType === "all" && (
+                  {type === "all" && (
                     <p className={styles.ranking_list_item_content_type}>
                       {item.type}
                     </p>
@@ -194,10 +235,8 @@ const Ranking = () => {
                 </div>
               </li>
             ))}
-          </ol>
-        ) : (
-          <Empty />
-        )}
+          </InfiniteScroll>
+        </ol>
       </div>
     </div>
   );
