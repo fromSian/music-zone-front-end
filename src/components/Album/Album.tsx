@@ -10,7 +10,6 @@ import { Button, Empty, Spin, Tooltip } from "antd";
 import { AxiosResponse } from "axios";
 import classnames from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import {
   AddIcon,
@@ -28,28 +27,28 @@ const Album = () => {
   const dispatch = useAppDispatch();
   const headerRef = useRef<HTMLDivElement | null>(null);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [album, setAlbum] = useState<AlbumDetail>();
-  const { isLoading, isFetching, isSuccess, data } = useQuery({
-    queryKey: ["album", id],
-    queryFn: async ({ queryKey }) => {
-      try {
-        const [_key, id] = queryKey;
-        const result: AxiosResponse<AlbumDetail> = await request.get(
-          `/albums/${id}/`
-        );
-        return result.data;
-      } catch (err) {
-        getErrorMessage(err);
+
+  const query = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const result: AxiosResponse<AlbumDetail> = await request.get(
+        `/albums/${id}/`
+      );
+      if (result && result.data) {
+        setAlbum(result.data);
       }
-    },
-    enabled: !!id,
-  });
+    } catch (err) {
+      getErrorMessage(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
-    if (data) {
-      setAlbum(data);
-    }
-  }, [data]);
+    query();
+  }, [query]);
 
   /**
    * 顺序播放
@@ -82,9 +81,9 @@ const Album = () => {
 
   return (
     <div className={styles.album}>
-      {isLoading || isFetching ? (
+      {isLoading ? (
         <Spin />
-      ) : isSuccess && album ? (
+      ) : album ? (
         <>
           <div className={styles.album_header} ref={headerRef}>
             <div className={styles.album_image}>
