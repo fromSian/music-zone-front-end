@@ -55,7 +55,7 @@ const MusicLibrary = () => {
   >([]);
   const [activeMode, setActiveMode] = useState<string>("card");
 
-  const [cur, setCur] = useState(1);
+  const pageRef = useRef(1);
   const [total, setTotal] = useState<number | undefined>(undefined);
 
   const controllerRef = useRef<AbortController>();
@@ -80,7 +80,7 @@ const MusicLibrary = () => {
         if (result && result.data) {
           setData((data) => [...data, ...result.data.results]);
           setLoading(false);
-          setCur((v) => v + 1);
+          pageRef.current = pageRef.current + 1;
           setTotal(result.data.count);
         }
       } catch (err) {
@@ -101,7 +101,7 @@ const MusicLibrary = () => {
       controllerRef.current = undefined;
     }
     setData([]);
-    setCur(1);
+    pageRef.current = 1;
     setTotal(undefined);
     loadMoreData(type, 1, size);
 
@@ -166,8 +166,8 @@ const MusicLibrary = () => {
       <div className={styles.music_library_content} id="scrollContent">
         <InfiniteScroll
           dataLength={data.length}
-          next={() => loadMoreData(type || "ablums", cur, size)}
-          hasMore={!total || data.length < total}
+          next={() => loadMoreData(type || "ablums", pageRef.current, size)}
+          hasMore={total === undefined || data.length < total}
           loader={
             <Divider>
               <Spin />
