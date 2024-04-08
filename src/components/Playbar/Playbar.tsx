@@ -136,10 +136,15 @@ const Playbar = () => {
     audioRef.current.addEventListener("ended", ended);
 
     const play = () => {
+      dispatch(setPlaying(true));
       addPlayRecord("SONGS", song.id);
     };
     audioRef.current.addEventListener("play", play);
 
+    const pause = () => {
+      dispatch(setPlaying(false));
+    };
+    audioRef.current.addEventListener("pause", pause);
     return () => {
       audioRef.current?.removeEventListener("canplay", ready);
       audioRef.current?.removeEventListener("timeupdate", update);
@@ -147,6 +152,7 @@ const Playbar = () => {
       audioRef.current?.removeEventListener("seeked", seeked);
       audioRef.current?.removeEventListener("ended", ended);
       audioRef.current?.removeEventListener("play", play);
+      audioRef.current?.removeEventListener("pause", pause);
     };
   }, [song]);
 

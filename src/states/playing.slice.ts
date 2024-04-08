@@ -2,6 +2,7 @@ import { Song } from "@/types/musicInfo";
 import { PlayingSortType } from "@/types/playInfo";
 import { loveOrNotASong } from "@/utils/api";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { message } from "antd";
 import { shuffle } from "lodash";
 interface InitialStateProps {
   listInAddOrder: Song[];
@@ -53,6 +54,12 @@ export const playingListSlice = createSlice({
       action: PayloadAction<{ song: Song; isPlayNow?: boolean }>
     ) => {
       let { song, isPlayNow } = action.payload;
+      const isExist = state.listInAddOrder.find((item) => item.id === song.id);
+      if (isExist) {
+        message.error("播放列表中已存在");
+        return;
+      }
+
       state.listInAddOrder = [...state.listInAddOrder, song];
 
       if (state.playingSortType === PlayingSortType.Random) {

@@ -102,25 +102,25 @@ const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   // <React.StrictMode>
-  <Provider store={store}>
-    <ConfigProvider
-      locale={zhCN}
-      theme={{
-        token: {
-          colorBgBase: "#cddec6",
-          colorTextBase: "#181515",
-          colorPrimary: "#4A5589",
-          colorInfo: "#4A5589",
-          colorSuccess: "#3c6e24",
-          colorWarning: "#a47d2e",
-          colorError: "#a33132",
-        },
-      }}
-    >
+  <ConfigProvider
+    locale={zhCN}
+    theme={{
+      token: {
+        colorBgBase: "#cddec6",
+        colorTextBase: "#181515",
+        colorPrimary: "#4A5589",
+        colorInfo: "#4A5589",
+        colorSuccess: "#3c6e24",
+        colorWarning: "#a47d2e",
+        colorError: "#a33132",
+      },
+    }}
+  >
+    <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router}></RouterProvider>
       </QueryClientProvider>
-    </ConfigProvider>
-  </Provider>
+    </Provider>
+  </ConfigProvider>
   // </React.StrictMode>
 );
