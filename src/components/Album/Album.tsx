@@ -1,10 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/states/hooks";
-import {
-  addOne,
-  changePlayingSong,
-  playOneAlbum,
-  setPlaying,
-} from "@/states/playing.slice";
+import { addOne, playOneAlbum, setPlaying } from "@/states/playing.slice";
 import { AlbumDetail, Song } from "@/types/musicInfo";
 import { addPlayRecord, loveOrNotASong } from "@/utils/api";
 import { getErrorMessage } from "@/utils/error";
@@ -86,10 +81,6 @@ const Album = () => {
     dispatch(addOne({ song }));
   }, []);
 
-  const handlePlayOneSong = useCallback((song: Song) => {
-    dispatch(addOne({ song, isPlayNow: true }));
-  }, []);
-
   return (
     <div className={styles.album}>
       {isLoading || isFetching ? (
@@ -122,22 +113,26 @@ const Album = () => {
                 } 首，${formatSecondsString(
                   album.songs.reduce((prev, cur) => prev + cur.duration, 0)
                 )}`}</p>
-                <div className={styles.album_info_play_control}>
-                  <Button
-                    type="primary"
-                    icon={<PlayModeOrderIcon />}
-                    onClick={handlePlayInOrder}
-                  >
-                    播放
-                  </Button>
-                  <Button
-                    type="primary"
-                    icon={<PlayModeShuffleIcon />}
-                    onClick={handlePlayShuffle}
-                  >
-                    乱序播放
-                  </Button>
-                </div>
+                {album.songs.length ? (
+                  <div className={styles.album_info_play_control}>
+                    <Button
+                      type="primary"
+                      icon={<PlayModeOrderIcon />}
+                      onClick={handlePlayInOrder}
+                    >
+                      播放
+                    </Button>
+                    <Button
+                      type="primary"
+                      icon={<PlayModeShuffleIcon />}
+                      onClick={handlePlayShuffle}
+                    >
+                      乱序播放
+                    </Button>
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
             </div>
           </div>
@@ -160,8 +155,7 @@ const Album = () => {
                         isPlaying={isPlaying}
                         item={song}
                         handlePlay={() => {
-                          dispatch(changePlayingSong(song));
-                          dispatch(setPlaying(true));
+                          dispatch(addOne({ song, isPlayNow: true }));
                         }}
                         handlePause={() => {
                           dispatch(setPlaying(false));
@@ -268,7 +262,7 @@ const Album = () => {
                 ))}
               </>
             ) : (
-              <Empty />
+              <Empty description={"无歌曲"} />
             )}
           </div>
         </>
