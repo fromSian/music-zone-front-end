@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/states/hooks";
-import { setPanelVisible } from "@/states/playing.slice";
-import { CloseOutlined } from "@ant-design/icons";
+import { clearAll, setPanelVisible } from "@/states/playing.slice";
+import { ClearOutlined, CloseOutlined } from "@ant-design/icons";
 import classnames from "classnames";
 import { useEffect, useState } from "react";
 import ListControl from "../ListControl/ListControl";
@@ -33,13 +33,19 @@ const PlayingList = () => {
       <header className={styles.playlist_header}>
         <p className={styles.playlist_header_name}>播放列表</p>
 
-        <div
-          className={styles.playlist_header_close}
-          onClick={() => {
-            dispatch(setPanelVisible(false));
-          }}
-        >
-          <CloseOutlined />
+        <div className={styles.playlist_header_right}>
+          <ClearOutlined
+            className={styles.playlist_header_icon}
+            onClick={() => {
+              dispatch(clearAll());
+            }}
+          />
+          <CloseOutlined
+            className={styles.playlist_header_icon}
+            onClick={() => {
+              dispatch(setPanelVisible(false));
+            }}
+          />
         </div>
       </header>
       <div className={styles.playlist_list}>

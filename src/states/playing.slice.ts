@@ -134,6 +134,12 @@ export const playingListSlice = createSlice({
     changePlayingSortType: (state, action: PayloadAction<number>) => {
       state.playingSortType = action.payload;
     },
+    clearAll: (state) => {
+      state.isPlaying = false;
+      state.playingSong = null;
+      state.listInAddOrder = [];
+      state.listInPlayOrder = [];
+    },
   },
   extraReducers(builder) {
     builder.addCase(likeASong.fulfilled, (state, action) => {
@@ -171,6 +177,7 @@ export const {
   setPanelVisible,
   setPlaying,
   changePlayingSortType,
+  clearAll,
 } = playingListSlice.actions;
 
 export default playingListSlice.reducer;

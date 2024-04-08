@@ -29,16 +29,20 @@
     align-items: center;
     height: 28rem;
 
-    .playlist_header_close {
-      cursor: pointer;
-      transition: 0.3s;
+    .playlist_header_right {
+      display: flex;
+      gap: 8rem;
+      .playlist_header_icon {
+        cursor: pointer;
+        transition: 0.3s;
 
-      &:active {
-        color: fade(@font-color-light, 40);
-      }
+        &:active {
+          color: fade(@font-color-light, 40);
+        }
 
-      &:hover {
-        transform: scale(1.15);
+        &:hover {
+          transform: scale(1.15);
+        }
       }
     }
   }
