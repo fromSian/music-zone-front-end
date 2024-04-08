@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import { Empty } from "antd";
 import classnames from "classnames";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./index.module.less";
 
 const SearchBar = () => {
@@ -39,6 +39,14 @@ const SearchBar = () => {
     } finally {
       setLoading(false);
     }
+  }, [searchText]);
+
+  useEffect(() => {
+    setResult(undefined);
+  }, [isHide]);
+
+  useEffect(() => {
+    setResult(undefined);
   }, [searchText]);
 
   return (
