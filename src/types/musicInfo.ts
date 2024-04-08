@@ -154,3 +154,29 @@ export interface playRecordEdit {
   target_id: string;
   description: string;
 }
+
+export interface SearchResult {
+  total: number;
+  songs: Songs[];
+  albums: Albums[];
+  playlists: Playlists[];
+}
+
+export interface Playlists {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface Albums {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface Songs {
+  id: string;
+  name: string;
+  description: string;
+  album: string;
+}
