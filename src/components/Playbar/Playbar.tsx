@@ -94,6 +94,7 @@ const Playbar = () => {
   useEffect(() => {
     if (!song) {
       setCurrent(0);
+      setDuration(0);
       setIsReady(false);
       return;
     }
