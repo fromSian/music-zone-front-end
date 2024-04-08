@@ -8,7 +8,6 @@ import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { Divider, Spin, Tag } from "antd";
 import { AxiosResponse } from "axios";
-import classnames from "classnames";
 import { useCallback, useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useNavigate, useParams } from "react-router-dom";
@@ -28,7 +27,7 @@ const tagOptions = [
   {
     label: "艺人",
     key: "artists",
-    disabled: false,
+    disabled: true,
   },
 ];
 
@@ -137,7 +136,7 @@ const MusicLibrary = () => {
           ))}
         </div>
 
-        <div className={styles.music_library_header_mode}>
+        {/* <div className={styles.music_library_header_mode}>
           {modeOptions.map((mode) => (
             <div
               key={mode.key}
@@ -162,7 +161,7 @@ const MusicLibrary = () => {
               {mode.label}
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
       <div className={styles.music_library_content} id="scrollContent">
         <InfiniteScroll

@@ -56,7 +56,12 @@ export const playingListSlice = createSlice({
       let { song, isPlayNow } = action.payload;
       const isExist = state.listInAddOrder.find((item) => item.id === song.id);
       if (isExist) {
-        message.error("播放列表中已存在");
+        if (isPlayNow) {
+          state.playingSong = song;
+          state.isPlaying = true;
+        } else {
+          message.error("播放列表中已存在");
+        }
         return;
       }
 

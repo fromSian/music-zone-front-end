@@ -1,56 +1,84 @@
+import { useAppDispatch, useAppSelector } from "@/states/hooks";
+import { addOne, setPlaying } from "@/states/playing.slice";
 import { ListResult, PlayRecordList } from "@/types/musicInfo";
 import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { joinList2Str } from "@/utils/text";
-import { Empty, Popover, Select, Spin, Tooltip } from "antd";
+import { Empty, Select, Spin, Tooltip } from "antd";
 import { AxiosResponse } from "axios";
 import classnames from "classnames";
-import { shuffle } from "lodash";
-import { useCallback, useRef, useState } from "react";
-import { BsFillMusicPlayerFill } from "react-icons/bs";
-import { useQuery } from "react-query";
-import { AddIcon, HeartLineIcon, PlayIcon } from "../Icons/Icons";
-import { rankingSongs, rankingTypes } from "./data";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AddIcon, HeartFullIcon, HeartLineIcon } from "../Icons/Icons";
+import PlayStatus from "../PlayStatus/PlayStatus";
 import styles from "./index.module.less";
-
+export const rankingTypes = [
+  {
+    label: "总榜",
+    value: "all",
+  },
+  {
+    label: "歌曲",
+    value: "SONGS",
+  },
+  {
+    label: "专辑",
+    value: "ALBUMS",
+  },
+  {
+    label: "歌单",
+    value: "PLAYLISTS",
+  },
+  // {
+  //   label: "艺人",
+  //   value: "ARTISTS",
+  // },
+];
 const Ranking = () => {
+  const { isPlaying, playingSong } = useAppSelector((state) => state.playing);
+  const dispatch = useAppDispatch();
   const wrapRef = useRef<HTMLDivElement | null>(null);
-  const [selectedType, setSelectedType] = useState<string | number>(
+  const [selectedType, setSelectedType] = useState<string>(
     rankingTypes[0].value
   );
-  const [songs, setSongs] = useState(shuffle(rankingSongs));
+  const [data, setData] = useState<PlayRecordList[]>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleTypeChange = (value: number | string) => {
-    setSongs(shuffle(rankingSongs));
-    setSelectedType(value);
-  };
-
-  const [playlist, setPlaylist] = useState([
-    {
-      id: "1",
-      name: "1",
-    },
-    {
-      id: "2",
-      name: "2",
-    },
-  ]);
-
-  const { isLoading, isFetching, isSuccess, data } = useQuery({
-    queryKey: ["recently"],
-    queryFn: async () => {
-      try {
-        const result: AxiosResponse<ListResult<PlayRecordList>> =
-          await request.get(`/play-record/?order=-count&size=50`);
-        return result.data.results;
-      } catch (err) {
-        console.log(getErrorMessage(err));
+  const query = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setIsSuccess(false);
+      const result: AxiosResponse<ListResult<PlayRecordList>> =
+        await request.get(
+          `/play-record/?order=-count&size=50&type=${selectedType}`
+        );
+      if (result && result.data && result.data.results) {
+        setIsSuccess(true);
+        setData(result.data.results);
       }
-    },
-  });
+    } catch (err) {
+      console.log(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedType]);
 
-  const handleAddToPlaylist = useCallback(() => {
-    console.log("add");
+  useEffect(() => {
+    query();
+  }, [query]);
+
+  const handleTypeChange = useCallback((value: string) => {
+    setSelectedType(value);
+  }, []);
+
+  const handleGoTo = useCallback((item: PlayRecordList) => {
+    if (item.type === "SONGS") {
+      window.open(`/library/albums/${item.detail.album.id}/${item.detail.id}`);
+    } else {
+      window.open(
+        `/library/${item.type.toLocaleLowerCase()}/${item.target_id}`
+      );
+    }
   }, []);
 
   return (
@@ -84,7 +112,7 @@ const Ranking = () => {
         />
       </div>
       <div className={styles.ranking_list}>
-        {isLoading || isFetching ? (
+        {isLoading ? (
           <Spin />
         ) : isSuccess && data && data.length ? (
           <ol>
@@ -94,16 +122,17 @@ const Ranking = () => {
                   <p className={styles.ranking_list_item_content_index}>
                     {index + 1}
                   </p>
-                  <div className={styles.ranking_list_item_content_image}>
-                    <BsFillMusicPlayerFill
-                      className={styles.ranking_list_item_content_image_main}
-                    />
-                    <PlayIcon
-                      className={styles.ranking_list_item_content_image_play}
-                    />
-                  </div>
+                  {selectedType === "all" && (
+                    <p className={styles.ranking_list_item_content_type}>
+                      {item.type}
+                    </p>
+                  )}
+
                   <div className={styles.ranking_list_item_content_info}>
-                    <p className={styles.ranking_list_item_content_name}>
+                    <p
+                      className={styles.ranking_list_item_content_name}
+                      onClick={() => handleGoTo(item)}
+                    >
                       {item.detail?.name}
                     </p>
                     {item.type === "ALBUMS" || item.type === "SONGS" ? (
@@ -114,51 +143,54 @@ const Ranking = () => {
                       ""
                     )}
                   </div>
-                  <p className={styles.ranking_list_item_content_count}>5次</p>
+
                   {item.type === "SONGS" && (
                     <div className={styles.ranking_list_item_content_operator}>
-                      <Popover
-                        rootClassName={styles.playlist}
-                        placement="left"
-                        getPopupContainer={() => wrapRef.current as HTMLElement}
-                        content={
-                          <>
-                            {playlist.map((item) => (
-                              <div
-                                className={styles.playlist_content}
-                                key={item.id}
-                                onClick={handleAddToPlaylist}
-                              >
-                                加入 <a>{item.name}</a>
-                              </div>
-                            ))}
-                          </>
-                        }
-                        title={"加入播放列表/歌单"}
-                        trigger={"click"}
-                      >
+                      <Tooltip title={"加入播放列表"}>
                         <AddIcon
+                          onClick={() => {
+                            dispatch(
+                              addOne({ song: item.detail, isPlayNow: false })
+                            );
+                          }}
                           className={
                             styles.ranking_list_item_content_operator_icon
                           }
                         />
-                      </Popover>
+                      </Tooltip>
                       <Tooltip title={"喜欢"}>
-                        <HeartLineIcon
-                          className={
-                            styles.ranking_list_item_content_operator_icon
-                          }
-                        />
+                        {item.detail.isLiked ? (
+                          <HeartFullIcon
+                            className={
+                              styles.ranking_list_item_content_operator_icon
+                            }
+                          />
+                        ) : (
+                          <HeartLineIcon
+                            className={
+                              styles.ranking_list_item_content_operator_icon
+                            }
+                          />
+                        )}
                       </Tooltip>
-                      <Tooltip title={"播放"}>
-                        <PlayIcon
-                          className={
-                            styles.ranking_list_item_content_operator_icon
-                          }
-                        />
-                      </Tooltip>
+
+                      <PlayStatus
+                        playingSong={playingSong}
+                        isPlaying={isPlaying}
+                        item={item.detail}
+                        handlePlay={() => {
+                          dispatch(
+                            addOne({ song: item.detail, isPlayNow: true })
+                          );
+                        }}
+                        handlePause={() => {
+                          dispatch(setPlaying(false));
+                        }}
+                      />
                     </div>
                   )}
+
+                  <p className={styles.ranking_list_item_content_count}>5次</p>
                 </div>
               </li>
             ))}

@@ -122,7 +122,7 @@
       border-radius: 4rem;
       transition: 0.5s;
       padding: 10rem 16rem;
-      gap: 8rem;
+      gap: 12rem;
 
       .ranking_list_item_content_index {
         width: 20rem;
@@ -133,43 +133,50 @@
         line-height: 20rem;
       }
 
-      .ranking_list_item_content_image {
-        width: 40rem;
-        height: 40rem;
-        border-radius: 4rem;
-        background: @bg-gray;
-        position: relative;
-        cursor: pointer;
-
-        .ranking_list_item_content_image_main {
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          position: absolute;
-          transition: filter 0.3s;
-        }
-
-        .ranking_list_item_content_image_play {
-          position: absolute;
-          opacity: 0;
-          font-size: 24rem;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          transition: opacity 0.3s;
-        }
-
-        &:hover {
-          .ranking_list_item_content_image_main {
-            filter: blur(2rem);
-          }
-
-          .ranking_list_item_content_image_play {
-            opacity: 1;
-            z-index: 9;
-          }
-        }
+      .ranking_list_item_content_type {
+        font-size: 12rem;
+        font-style: italic;
+        color: @font-color-light;
+        width: 60rem;
+        text-align: center;
       }
+      // .ranking_list_item_content_image {
+      //   width: 40rem;
+      //   height: 40rem;
+      //   border-radius: 4rem;
+      //   background: @bg-gray;
+      //   position: relative;
+      //   cursor: pointer;
+
+      //   .ranking_list_item_content_image_main {
+      //     left: 50%;
+      //     top: 50%;
+      //     transform: translate(-50%, -50%);
+      //     position: absolute;
+      //     transition: filter 0.3s;
+      //   }
+
+      //   .ranking_list_item_content_image_play {
+      //     position: absolute;
+      //     opacity: 0;
+      //     font-size: 24rem;
+      //     left: 50%;
+      //     top: 50%;
+      //     transform: translate(-50%, -50%);
+      //     transition: opacity 0.3s;
+      //   }
+
+      //   &:hover {
+      //     .ranking_list_item_content_image_main {
+      //       filter: blur(2rem);
+      //     }
+
+      //     .ranking_list_item_content_image_play {
+      //       opacity: 1;
+      //       z-index: 9;
+      //     }
+      //   }
+      // }
 
       .ranking_list_item_content_info {
         flex: 1 1 0%;
@@ -178,6 +185,12 @@
           font-size: 16rem;
           font-weight: 500;
           margin-bottom: 4rem;
+          cursor: pointer;
+          transition: 0.3s;
+
+          &:hover {
+            color: @color-primary;
+          }
         }
 
         .ranking_list_item_content_artist {
@@ -185,11 +198,16 @@
         }
       }
 
+      .ranking_list_item_content_count {
+        color: fade(@font-color-light, 60);
+      }
+
       .ranking_list_item_content_operator {
         display: flex;
-        gap: 6rem;
+        gap: 8rem;
         justify-content: space-between;
         align-items: center;
+        font-size: 20rem;
 
         .ranking_list_item_content_operator_icon {
           cursor: pointer;
