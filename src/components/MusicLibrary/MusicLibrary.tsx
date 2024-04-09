@@ -196,7 +196,7 @@ const MusicLibrary = () => {
                       src={
                         item.image
                           ? item.image
-                          : type === "ablums"
+                          : type === "albums"
                           ? new URL(
                               `@/asset/images/default/albums.JPG`,
                               import.meta.url
