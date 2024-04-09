@@ -6,7 +6,7 @@ import {
 } from "@/types/musicInfo";
 import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
-import { Divider, Spin, Tag } from "antd";
+import { Divider, Result, Spin, Tag, message } from "antd";
 import { AxiosResponse } from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -57,6 +57,7 @@ const MusicLibrary = () => {
 
   const pageRef = useRef(1);
   const [total, setTotal] = useState<number | undefined>(undefined);
+  const [isFail, setIsFail] = useState(false);
 
   const controllerRef = useRef<AbortController>();
 
@@ -78,14 +79,17 @@ const MusicLibrary = () => {
             signal: controllerRef.current.signal,
           });
         if (result && result.data) {
+          setIsFail(false);
           setData((data) => [...data, ...result.data.results]);
           setLoading(false);
           pageRef.current = pageRef.current + 1;
           setTotal(result.data.count);
         }
       } catch (err) {
+        setIsFail(true);
         setLoading(false);
         getErrorMessage(err);
+        message.error("数据获取失败");
       }
     },
     []
@@ -102,6 +106,7 @@ const MusicLibrary = () => {
     }
     setData([]);
     pageRef.current = 1;
+    setIsFail(false);
     setTotal(undefined);
     loadMoreData(type, 1, size);
 
@@ -164,58 +169,62 @@ const MusicLibrary = () => {
         </div> */}
       </div>
       <div className={styles.music_library_content} id="scrollContent">
-        <InfiniteScroll
-          dataLength={data.length}
-          next={() => loadMoreData(type || "ablums", pageRef.current, size)}
-          hasMore={total === undefined || data.length < total}
-          loader={
-            <Divider>
-              <Spin />
-            </Divider>
-          }
-          endMessage={<Divider plain>已加载全部🫠</Divider>}
-          scrollableTarget={"scrollContent"}
-        >
-          <div className={styles.music_library_content_list}>
-            {data.map((item, index) => (
-              <div
-                className={styles.music_library_content_list_item}
-                key={`music_library_item${index}`}
-                onClick={() => handleGoDetail(item)}
-              >
-                <div className={styles.music_library_content_list_item_image}>
-                  <img
-                    src={
-                      item.image
-                        ? item.image
-                        : type === "ablums"
-                        ? new URL(
-                            `@/asset/images/default/albums.JPG`,
-                            import.meta.url
-                          ).href
-                        : type === "playlists"
-                        ? new URL(
-                            `@/asset/images/default/playlists.JPG`,
-                            import.meta.url
-                          ).href
-                        : new URL(
-                            `@/asset/images/default/artists.JPG`,
-                            import.meta.url
-                          ).href
-                    }
-                    className={
-                      styles.music_library_content_list_item_image_main
-                    }
-                  />
-                </div>
+        {isFail ? (
+          <Result status="500" title="500" subTitle="数据获取失败" />
+        ) : (
+          <InfiniteScroll
+            dataLength={data.length}
+            next={() => loadMoreData(type || "ablums", pageRef.current, size)}
+            hasMore={total === undefined || data.length < total}
+            loader={
+              <Divider>
+                <Spin />
+              </Divider>
+            }
+            endMessage={<Divider plain>已加载全部🫠</Divider>}
+            scrollableTarget={"scrollContent"}
+          >
+            <div className={styles.music_library_content_list}>
+              {data.map((item, index) => (
+                <div
+                  className={styles.music_library_content_list_item}
+                  key={`music_library_item${index}`}
+                  onClick={() => handleGoDetail(item)}
+                >
+                  <div className={styles.music_library_content_list_item_image}>
+                    <img
+                      src={
+                        item.image
+                          ? item.image
+                          : type === "ablums"
+                          ? new URL(
+                              `@/asset/images/default/albums.JPG`,
+                              import.meta.url
+                            ).href
+                          : type === "playlists"
+                          ? new URL(
+                              `@/asset/images/default/playlists.JPG`,
+                              import.meta.url
+                            ).href
+                          : new URL(
+                              `@/asset/images/default/artists.JPG`,
+                              import.meta.url
+                            ).href
+                      }
+                      className={
+                        styles.music_library_content_list_item_image_main
+                      }
+                    />
+                  </div>
 
-                <p className={styles.music_library_content_list_item_name}>
-                  {item.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        </InfiniteScroll>
+                  <p className={styles.music_library_content_list_item_name}>
+                    {item.name}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </InfiniteScroll>
+        )}
       </div>
     </div>
   );

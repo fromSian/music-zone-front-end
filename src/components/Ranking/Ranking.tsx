@@ -6,7 +6,7 @@ import { loveOrNotASong } from "@/utils/api";
 import { getErrorMessage } from "@/utils/error";
 import request from "@/utils/request";
 import { joinList2Str } from "@/utils/text";
-import { Divider, Select, Spin, Tooltip, message } from "antd";
+import { Divider, Result, Select, Spin, Tooltip, message } from "antd";
 import { AxiosResponse } from "axios";
 import classnames from "classnames";
 import { map } from "lodash";
@@ -50,6 +50,7 @@ const Ranking = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [total, setTotal] = useState<number | undefined>(undefined);
   const controllerRef = useRef<AbortController>();
+  const [isFail, setIsFail] = useState(false);
 
   const pageRef = useRef(1);
 
@@ -71,11 +72,14 @@ const Ranking = () => {
             `/play-record/?order=-count&size=${size}&page=${page}&type=${type.toUpperCase()}`
           );
         if (result && result.data && result.data.results) {
+          setIsFail(false);
           setData((data) => [...data, ...result.data.results]);
           pageRef.current = pageRef.current + 1;
           setTotal(result.data.count);
         }
       } catch (err) {
+        setIsFail(true);
+        message.error("数据获取失败");
         console.log(getErrorMessage(err));
       } finally {
         setIsLoading(false);
@@ -96,6 +100,7 @@ const Ranking = () => {
     setData([]);
     pageRef.current = 1;
     setTotal(undefined);
+    setIsFail(false);
     loadMoreData(type, 1, size);
 
     return () => {
@@ -146,150 +151,157 @@ const Ranking = () => {
           onChange={(value) => navigate(`/rank/${value}`)}
         />
       </div>
+
       <div className={styles.ranking_list} id="scrollContent">
-        <ol>
-          <InfiniteScroll
-            dataLength={data.length}
-            next={() => loadMoreData(type || "all", pageRef.current, size)}
-            hasMore={total === undefined || data.length < total}
-            loader={
-              <Divider>
-                <Spin />
-              </Divider>
-            }
-            endMessage={<Divider plain>已加载全部🫠</Divider>}
-            scrollableTarget={"scrollContent"}
-          >
-            {data.map((item, index) => (
-              <li className={styles.ranking_list_item} key={item.id}>
-                <div className={styles.ranking_list_item_content}>
-                  <p className={styles.ranking_list_item_content_index}>
-                    {index + 1}
-                  </p>
-                  {type === "all" && (
-                    <p className={styles.ranking_list_item_content_type}>
-                      {item.type}
+        {isFail ? (
+          <Result status="500" title="500" subTitle="数据获取失败" />
+        ) : (
+          <ol>
+            <InfiniteScroll
+              dataLength={data.length}
+              next={() => loadMoreData(type || "all", pageRef.current, size)}
+              hasMore={total === undefined || data.length < total}
+              loader={
+                <Divider>
+                  <Spin />
+                </Divider>
+              }
+              endMessage={<Divider plain>已加载全部🫠</Divider>}
+              scrollableTarget={"scrollContent"}
+            >
+              {data.map((item, index) => (
+                <li className={styles.ranking_list_item} key={item.id}>
+                  <div className={styles.ranking_list_item_content}>
+                    <p className={styles.ranking_list_item_content_index}>
+                      {index + 1}
                     </p>
-                  )}
-
-                  <div className={styles.ranking_list_item_content_info}>
-                    <p
-                      className={styles.ranking_list_item_content_name}
-                      onClick={() => handleGoTo(item)}
-                    >
-                      {item.detail?.name}
-                    </p>
-                    {item.type === "ALBUMS" || item.type === "SONGS" ? (
-                      <p className={styles.ranking_list_item_content_artist}>
-                        {joinList2Str(item.detail?.artist, "name")}
+                    {type === "all" && (
+                      <p className={styles.ranking_list_item_content_type}>
+                        {item.type}
                       </p>
-                    ) : (
-                      ""
                     )}
-                  </div>
 
-                  {item.type === "SONGS" && (
-                    <div className={styles.ranking_list_item_content_operator}>
-                      <Tooltip title={"加入播放列表"}>
-                        <AddIcon
-                          onClick={() => {
+                    <div className={styles.ranking_list_item_content_info}>
+                      <p
+                        className={styles.ranking_list_item_content_name}
+                        onClick={() => handleGoTo(item)}
+                      >
+                        {item.detail?.name}
+                      </p>
+                      {item.type === "ALBUMS" || item.type === "SONGS" ? (
+                        <p className={styles.ranking_list_item_content_artist}>
+                          {joinList2Str(item.detail?.artist, "name")}
+                        </p>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+
+                    {item.type === "SONGS" && (
+                      <div
+                        className={styles.ranking_list_item_content_operator}
+                      >
+                        <Tooltip title={"加入播放列表"}>
+                          <AddIcon
+                            onClick={() => {
+                              dispatch(
+                                addOne({ song: item.detail, isPlayNow: false })
+                              );
+                            }}
+                            className={
+                              styles.ranking_list_item_content_operator_icon
+                            }
+                          />
+                        </Tooltip>
+                        <Tooltip title={"喜欢"}>
+                          {(
+                            loveOperationData.hasOwnProperty(item.target_id)
+                              ? loveOperationData[item.target_id]
+                              : item.detail.isLiked
+                          ) ? (
+                            <HeartFullIcon
+                              className={
+                                styles.ranking_list_item_content_operator_icon
+                              }
+                              onClick={async () => {
+                                try {
+                                  const res = await loveOrNotASong(
+                                    item.detail.id,
+                                    false
+                                  );
+                                  if (res) {
+                                    dispatch(
+                                      addLoveRecord({
+                                        id: item.detail.id,
+                                        isLoved: false,
+                                      })
+                                    );
+                                    message.success("取消收藏成功");
+                                  } else {
+                                    message.error("取消收藏失败");
+                                  }
+                                } catch (err) {
+                                  message.error("取消收藏失败");
+                                  getErrorMessage(err);
+                                }
+                              }}
+                            />
+                          ) : (
+                            <HeartLineIcon
+                              className={
+                                styles.ranking_list_item_content_operator_icon
+                              }
+                              onClick={async () => {
+                                try {
+                                  const res = await loveOrNotASong(
+                                    item.detail.id,
+                                    true
+                                  );
+                                  if (res) {
+                                    dispatch(
+                                      addLoveRecord({
+                                        id: item.detail.id,
+                                        isLoved: true,
+                                      })
+                                    );
+                                    message.success("收藏成功");
+                                  } else {
+                                    message.error("收藏失败");
+                                  }
+                                } catch (err) {
+                                  message.error("收藏失败");
+                                  getErrorMessage(err);
+                                }
+                              }}
+                            />
+                          )}
+                        </Tooltip>
+
+                        <PlayStatus
+                          playingSong={playingSong}
+                          isPlaying={isPlaying}
+                          item={item.detail}
+                          handlePlay={() => {
                             dispatch(
-                              addOne({ song: item.detail, isPlayNow: false })
+                              addOne({ song: item.detail, isPlayNow: true })
                             );
                           }}
-                          className={
-                            styles.ranking_list_item_content_operator_icon
-                          }
+                          handlePause={() => {
+                            dispatch(setPlaying(false));
+                          }}
                         />
-                      </Tooltip>
-                      <Tooltip title={"喜欢"}>
-                        {(
-                          loveOperationData.hasOwnProperty(item.target_id)
-                            ? loveOperationData[item.target_id]
-                            : item.detail.isLiked
-                        ) ? (
-                          <HeartFullIcon
-                            className={
-                              styles.ranking_list_item_content_operator_icon
-                            }
-                            onClick={async () => {
-                              try {
-                                const res = await loveOrNotASong(
-                                  item.detail.id,
-                                  false
-                                );
-                                if (res) {
-                                  dispatch(
-                                    addLoveRecord({
-                                      id: item.detail.id,
-                                      isLoved: false,
-                                    })
-                                  );
-                                  message.success("取消收藏成功");
-                                } else {
-                                  message.error("取消收藏失败");
-                                }
-                              } catch (err) {
-                                message.error("取消收藏失败");
-                                getErrorMessage(err);
-                              }
-                            }}
-                          />
-                        ) : (
-                          <HeartLineIcon
-                            className={
-                              styles.ranking_list_item_content_operator_icon
-                            }
-                            onClick={async () => {
-                              try {
-                                const res = await loveOrNotASong(
-                                  item.detail.id,
-                                  true
-                                );
-                                if (res) {
-                                  dispatch(
-                                    addLoveRecord({
-                                      id: item.detail.id,
-                                      isLoved: true,
-                                    })
-                                  );
-                                  message.success("收藏成功");
-                                } else {
-                                  message.error("收藏失败");
-                                }
-                              } catch (err) {
-                                message.error("收藏失败");
-                                getErrorMessage(err);
-                              }
-                            }}
-                          />
-                        )}
-                      </Tooltip>
+                      </div>
+                    )}
 
-                      <PlayStatus
-                        playingSong={playingSong}
-                        isPlaying={isPlaying}
-                        item={item.detail}
-                        handlePlay={() => {
-                          dispatch(
-                            addOne({ song: item.detail, isPlayNow: true })
-                          );
-                        }}
-                        handlePause={() => {
-                          dispatch(setPlaying(false));
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  <p className={styles.ranking_list_item_content_count}>
-                    {item.count}次
-                  </p>
-                </div>
-              </li>
-            ))}
-          </InfiniteScroll>
-        </ol>
+                    <p className={styles.ranking_list_item_content_count}>
+                      {item.count}次
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </InfiniteScroll>
+          </ol>
+        )}
       </div>
     </div>
   );
