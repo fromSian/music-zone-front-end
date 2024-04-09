@@ -98,49 +98,55 @@ const SearchBar = () => {
       >
         {result &&
           (result.total ? (
-            ["songs", "albums", "playlists"].map((key) => (
-              <div
-                key={`search_div${key}`}
-                className={styles.search_result_list}
-              >
-                <p
-                  key={`search_title${key}`}
-                  className={styles.search_result_title}
+            ["songs", "albums", "playlists"].map((key) =>
+              result[key as "songs" | "albums" | "playlists"].length ? (
+                <div
+                  key={`search_div${key}`}
+                  className={styles.search_result_list}
                 >
-                  {key}
-                </p>
-                <ol key={`search_list${key}`}>
-                  {result[key as "songs" | "albums" | "playlists"].map(
-                    (item) => (
-                      <li
-                        key={`search_list${item.id}`}
-                        className={styles.search_result_item}
-                        onClick={() => {
-                          if (key === "songs") {
-                            window.open(
-                              `/library/albums/${(item as Songs).album}/${
-                                item.id
-                              }`
-                            );
-                          } else {
-                            window.open(`/library/${key}/${item.id}`);
-                          }
-                        }}
-                      >
-                        <p className={styles.search_result_item_name}>
-                          {item.name}
-                        </p>
-                        {item.description && (
-                          <p className={styles.search_result_item_description}>
-                            {item.description}
+                  <p
+                    key={`search_title${key}`}
+                    className={styles.search_result_title}
+                  >
+                    {key}
+                  </p>
+                  <ol key={`search_list${key}`}>
+                    {result[key as "songs" | "albums" | "playlists"].map(
+                      (item) => (
+                        <li
+                          key={`search_list${item.id}`}
+                          className={styles.search_result_item}
+                          onClick={() => {
+                            if (key === "songs") {
+                              window.open(
+                                `/library/albums/${(item as Songs).album}/${
+                                  item.id
+                                }`
+                              );
+                            } else {
+                              window.open(`/library/${key}/${item.id}`);
+                            }
+                          }}
+                        >
+                          <p className={styles.search_result_item_name}>
+                            {item.name}
                           </p>
-                        )}
-                      </li>
-                    )
-                  )}
-                </ol>
-              </div>
-            ))
+                          {item.description && (
+                            <p
+                              className={styles.search_result_item_description}
+                            >
+                              {item.description}
+                            </p>
+                          )}
+                        </li>
+                      )
+                    )}
+                  </ol>
+                </div>
+              ) : (
+                ""
+              )
+            )
           ) : (
             <Empty />
           ))}
