@@ -60,8 +60,6 @@ const Playbar = () => {
   const volumeBakRef = useRef<number>();
 
   const {
-    listInAddOrder,
-    listInPlayOrder,
     playingSong: song,
     isPlaying: isPlay,
     panelVisible,

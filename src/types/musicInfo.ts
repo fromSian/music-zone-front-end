@@ -2,8 +2,8 @@
  * List 查询分页
  */
 export interface Links {
-  next: string;
-  previous: any;
+  next: string | null;
+  previous: string | null;
 }
 
 /**
@@ -93,7 +93,7 @@ export interface PlaylistListItem {
   createTime: string;
   updateTime: string;
   name: string;
-  image: any;
+  image: string | null;
   description: string;
 }
 

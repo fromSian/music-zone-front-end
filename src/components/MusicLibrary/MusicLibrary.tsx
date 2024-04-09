@@ -31,18 +31,18 @@ const tagOptions = [
   // },
 ];
 
-const modeOptions = [
-  {
-    label: "卡片模式",
-    key: "card",
-    disabled: false,
-  },
-  {
-    label: "列表模式",
-    key: "list",
-    disabled: true,
-  },
-];
+// const modeOptions = [
+//   {
+//     label: "卡片模式",
+//     key: "card",
+//     disabled: false,
+//   },
+//   {
+//     label: "列表模式",
+//     key: "list",
+//     disabled: true,
+//   },
+// ];
 const types = ["albums", "playlists", "artists"];
 const size = 16;
 const MusicLibrary = () => {
@@ -53,7 +53,7 @@ const MusicLibrary = () => {
   const [data, setData] = useState<
     (PlaylistListItem | AlbumListItem | ArtistListItem)[]
   >([]);
-  const [activeMode, setActiveMode] = useState<string>("card");
+  // const [activeMode, setActiveMode] = useState<string>("card");
 
   const pageRef = useRef(1);
   const [total, setTotal] = useState<number | undefined>(undefined);

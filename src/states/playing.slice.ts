@@ -31,12 +31,9 @@ export const addRecord = createAsyncThunk("users/addRecord", async () => {
   return 1;
 });
 
-export const likeASong = createAsyncThunk(
-  "users/likeASong",
-  async (id: string) => {
-    return 2;
-  }
-);
+export const likeASong = createAsyncThunk("users/likeASong", async () => {
+  return 2;
+});
 
 export const playingListSlice = createSlice({
   name: "playingList",
@@ -149,15 +146,12 @@ export const playingListSlice = createSlice({
       state.listInPlayOrder = [];
     },
     //  排行榜、专辑、歌单收藏或取消收藏时同步playbar、playlist状态
-    updateLoveOrNot: (
-      state,
-      action: PayloadAction<{ id: string; love: boolean }>
-    ) => {
+    updateLoveOrNot: () => {
       // state.playingSortType = action.payload;
     },
   },
   extraReducers(builder) {
-    builder.addCase(likeASong.fulfilled, (state, action) => {});
+    builder.addCase(likeASong.fulfilled, () => {});
   },
 });
 

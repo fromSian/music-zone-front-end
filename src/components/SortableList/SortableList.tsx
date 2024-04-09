@@ -1,4 +1,4 @@
-import { SongType } from "@/types/musicInfo";
+import { Song } from "@/types/musicInfo";
 import {
   Active,
   DndContext,
@@ -19,12 +19,12 @@ import SortableItem, { DragHandle } from "./SortableItem";
 import styles from "./SortableList.module.less";
 import SortableOverlay from "./SortableOverlay";
 
-export type ItemType = SongType;
+export type ItemType = Song;
 
 interface SortableListProps {
   items: ItemType[];
-  onChange: (items: SongType[]) => void;
-  renderItem: (item: SongType) => ReactNode;
+  onChange: (items: Song[]) => void;
+  renderItem: (item: Song) => ReactNode;
 }
 
 const SortableList = ({ items, onChange, renderItem }: SortableListProps) => {
