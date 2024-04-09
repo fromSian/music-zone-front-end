@@ -4,7 +4,6 @@ import request from "@/utils/request";
 import { Empty, Spin } from "antd";
 import { AxiosResponse } from "axios";
 import { useCallback, useEffect, useState } from "react";
-import { PlayRecordDefaultIcon } from "../Icons/Icons";
 import styles from "./Recently.module.less";
 
 const Recently = () => {
@@ -55,7 +54,14 @@ const Recently = () => {
                 {item.detail?.hasOwnProperty("image") && item.detail.image ? (
                   <img src={item.detail?.image} />
                 ) : (
-                  <PlayRecordDefaultIcon />
+                  <img
+                    src={
+                      new URL(
+                        "@/asset/images/default/playlists.JPG",
+                        import.meta.url
+                      ).href
+                    }
+                  />
                 )}
               </div>
               <p className={styles.recently_content_item_name}>

@@ -30,12 +30,22 @@ const BannerItem = ({
       >
         <div className={styles.banner_item_image}>
           <img
-            src={item.image}
+            src={
+              item.image
+                ? item.image
+                : new URL("@/asset/images/default/albums.JPG", import.meta.url)
+                    .href
+            }
             className={styles.banner_item_image_main}
             title={item.name}
           />
           <img
-            src={item.image}
+            src={
+              item.image
+                ? item.image
+                : new URL("@/asset/images/default/albums.JPG", import.meta.url)
+                    .href
+            }
             className={styles.banner_item_image_back}
             title={item.name}
           />
