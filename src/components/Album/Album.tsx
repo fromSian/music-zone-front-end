@@ -25,7 +25,9 @@ import styles from "./Album.module.less";
 const Album = () => {
   const { id, song_id } = useParams();
   const { playingSong, isPlaying } = useAppSelector((state) => state.playing);
-  const { loveOperationData } = useAppSelector((state) => state.love);
+  const { loveOperationData, playlistId } = useAppSelector(
+    (state) => state.love
+  );
   const dispatch = useAppDispatch();
   const headerRef = useRef<HTMLDivElement | null>(null);
 
@@ -185,6 +187,7 @@ const Album = () => {
                             onClick={async () => {
                               try {
                                 const res = await loveOrNotASong(
+                                  playlistId,
                                   song.id,
                                   false
                                 );
@@ -215,7 +218,11 @@ const Album = () => {
                                 return;
                               }
                               try {
-                                const res = await loveOrNotASong(song.id, true);
+                                const res = await loveOrNotASong(
+                                  playlistId,
+                                  song.id,
+                                  true
+                                );
                                 if (res) {
                                   dispatch(
                                     addLoveRecord({

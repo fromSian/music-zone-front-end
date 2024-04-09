@@ -23,12 +23,14 @@ export const addPlayRecord = async (
   }
 };
 
-export const loveOrNotASong = async (id: string, love = true) => {
+export const loveOrNotASong = async (
+  playlistId: string,
+  id: string,
+  love = true
+) => {
   try {
     const res: AxiosResponse<string> = await request.post(
-      `/playlists/017851f6-18a4-47a5-ae13-e4656edd518c/${
-        love ? "add_song" : "remove_song"
-      }/`,
+      `/playlists/${playlistId}/${love ? "add_song" : "remove_song"}/`,
       {
         song: id,
       }

@@ -43,7 +43,9 @@ const Ranking = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const { isPlaying, playingSong } = useAppSelector((state) => state.playing);
-  const { loveOperationData } = useAppSelector((state) => state.love);
+  const { loveOperationData, playlistId } = useAppSelector(
+    (state) => state.love
+  );
   const dispatch = useAppDispatch();
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [data, setData] = useState<PlayRecordList[]>([]);
@@ -226,6 +228,7 @@ const Ranking = () => {
                               onClick={async () => {
                                 try {
                                   const res = await loveOrNotASong(
+                                    playlistId,
                                     item.detail.id,
                                     false
                                   );
@@ -254,6 +257,7 @@ const Ranking = () => {
                               onClick={async () => {
                                 try {
                                   const res = await loveOrNotASong(
+                                    playlistId,
                                     item.detail.id,
                                     true
                                   );

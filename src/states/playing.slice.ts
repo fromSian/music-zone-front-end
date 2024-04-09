@@ -1,6 +1,5 @@
 import { Song } from "@/types/musicInfo";
 import { PlayingSortType } from "@/types/playInfo";
-import { loveOrNotASong } from "@/utils/api";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { message } from "antd";
 import { shuffle } from "lodash";
@@ -35,10 +34,7 @@ export const addRecord = createAsyncThunk("users/addRecord", async () => {
 export const likeASong = createAsyncThunk(
   "users/likeASong",
   async (id: string) => {
-    const res = await loveOrNotASong(id);
-    if (res) {
-      return id;
-    }
+    return 2;
   }
 );
 
@@ -161,24 +157,7 @@ export const playingListSlice = createSlice({
     },
   },
   extraReducers(builder) {
-    builder.addCase(likeASong.fulfilled, (state, action) => {
-      const id = action.payload;
-      if (id) {
-        state.listInAddOrder.forEach((item) => {
-          if (item.id === id) {
-            item.isLiked = true;
-          }
-        });
-        state.listInPlayOrder.forEach((item) => {
-          if (item.id === id) {
-            item.isLiked = true;
-          }
-        });
-        if (state.playingSong?.id === id) {
-          state.playingSong.isLiked = true;
-        }
-      }
-    });
+    builder.addCase(likeASong.fulfilled, (state, action) => {});
   },
 });
 

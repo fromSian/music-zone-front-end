@@ -37,7 +37,9 @@ import PlayingList from "./PlayingList";
 import styles from "./playbar.module.less";
 
 const Playbar = () => {
-  const { loveOperationData } = useAppSelector((state) => state.love);
+  const { loveOperationData, playlistId } = useAppSelector(
+    (state) => state.love
+  );
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const volumeDivRef = useRef<HTMLDivElement | null>(null);
@@ -245,7 +247,11 @@ const Playbar = () => {
                 className={styles.play_control_switch_icon}
                 onClick={async () => {
                   try {
-                    const res = await loveOrNotASong(song.id, false);
+                    const res = await loveOrNotASong(
+                      playlistId,
+                      song.id,
+                      false
+                    );
                     if (res) {
                       dispatch(
                         addLoveRecord({
@@ -271,7 +277,7 @@ const Playbar = () => {
                     return;
                   }
                   try {
-                    const res = await loveOrNotASong(song.id, true);
+                    const res = await loveOrNotASong(playlistId, song.id, true);
                     if (res) {
                       dispatch(
                         addLoveRecord({

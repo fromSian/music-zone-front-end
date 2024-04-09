@@ -1,3 +1,7 @@
+import { useAppDispatch } from "@/states/hooks";
+import { setPlaylistId } from "@/states/loves.slice";
+import { getErrorMessage } from "@/utils/error";
+import request from "@/utils/request";
 import { Layout, Menu } from "antd";
 import type { MenuItemType } from "antd/es/menu/hooks/useItems";
 import { useEffect, useState } from "react";
@@ -12,6 +16,7 @@ interface HeaderProps {
 }
 
 const HeaderCustom = ({ routerConfig }: HeaderProps) => {
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const [activeKeys, setActiveKeys] = useState<string[]>(["/"]);
   const [menus, setMenus] = useState<MenuItemType[]>([]);
@@ -33,6 +38,20 @@ const HeaderCustom = ({ routerConfig }: HeaderProps) => {
         ),
       }));
     setMenus(_menus as MenuItemType[]);
+  }, []);
+
+  useEffect(() => {
+    const queryLove = async () => {
+      try {
+        const res = await request.get("/get_love_playlist/");
+        if (res && res.data) {
+          dispatch(setPlaylistId(res.data.id));
+        }
+      } catch (error) {
+        getErrorMessage(error);
+      }
+    };
+    queryLove();
   }, []);
 
   return (

@@ -17,7 +17,9 @@ import PlayStatus from "../PlayStatus/PlayStatus";
 import styles from "./Item.module.less";
 const Item = ({ item }: { item: Song }) => {
   const { playingSong, isPlaying } = useAppSelector((state) => state.playing);
-  const { loveOperationData } = useAppSelector((state) => state.love);
+  const { loveOperationData, playlistId } = useAppSelector(
+    (state) => state.love
+  );
   const dispatch = useAppDispatch();
   const handleDelete = useCallback(() => {
     dispatch(removeOne(item.id));
@@ -112,7 +114,11 @@ const Item = ({ item }: { item: Song }) => {
               <HeartFullIcon
                 onClick={async () => {
                   try {
-                    const res = await loveOrNotASong(item.id, false);
+                    const res = await loveOrNotASong(
+                      playlistId,
+                      item.id,
+                      false
+                    );
                     if (res) {
                       dispatch(
                         addLoveRecord({
@@ -134,7 +140,7 @@ const Item = ({ item }: { item: Song }) => {
               <HeartLineIcon
                 onClick={async () => {
                   try {
-                    const res = await loveOrNotASong(item.id, true);
+                    const res = await loveOrNotASong(playlistId, item.id, true);
                     if (res) {
                       dispatch(
                         addLoveRecord({

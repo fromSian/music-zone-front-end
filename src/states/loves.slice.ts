@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface InitialStateProps {
+  playlistId: string;
   loveOperationData: {
     // key: song.id
     // boolean: is loved
@@ -9,6 +10,7 @@ interface InitialStateProps {
 }
 
 const initialState: InitialStateProps = {
+  playlistId: "",
   loveOperationData: {},
 };
 
@@ -16,6 +18,9 @@ export const loveSlice = createSlice({
   initialState,
   name: "收藏/取消收藏操作",
   reducers: {
+    setPlaylistId: (state, action: PayloadAction<string>) => {
+      state.playlistId = action.payload;
+    },
     addLoveRecord: (
       state,
       action: PayloadAction<{ id: string; isLoved: boolean }>
@@ -26,6 +31,6 @@ export const loveSlice = createSlice({
   },
 });
 
-export const { addLoveRecord } = loveSlice.actions;
+export const { addLoveRecord, setPlaylistId } = loveSlice.actions;
 
 export default loveSlice.reducer;
