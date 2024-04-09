@@ -198,9 +198,16 @@ const Playbar = () => {
           ref={audioRef}
         ></audio>
         <div className={styles.playbar_album_image}>
-          {song?.album.image ? (
+          {song ? (
             <img
-              src={song.album.image}
+              src={
+                song?.album.image
+                  ? song.album.image
+                  : new URL(
+                      "@/asset/images/default/albums.JPG",
+                      import.meta.url
+                    ).href
+              }
               className={styles.playbar_album_image_main}
             />
           ) : (
